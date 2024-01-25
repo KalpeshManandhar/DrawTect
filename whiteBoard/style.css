@@ -16,7 +16,12 @@ body {
     border-radius: 5px;
   }
 
-#penOptions {
+#penOptions.disabled{
+  pointer-events: none;
+  opacity: 0;
+}
+
+#penOptions{
   position: absolute;
   top: 60px;
   left: 10px;

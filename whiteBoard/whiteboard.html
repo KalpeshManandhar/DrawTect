@@ -8,7 +8,7 @@
 </head>
 <body>
   <div id="toolSelectionBox">
-    <label><input type="radio" name="tool" value="pen"> Pen</label>
+    <label><input type="radio" name="tool" value="pen" checked> Pen</label>
     <label><input type="radio" name="tool" value="eraser"> Eraser</label>
   </div>
   <div id = "penOptions">
@@ -23,17 +23,12 @@
   </label>
     <label class = "title"> Stroke Width</label>
     <ul class = "chooseStroke">
-      <li class = "option">1x</li>
-      <li class = "option">3x</li>
-      <li class = "option">7x</li>
+      <li class = "option" onclick = "selectStrokeWidth('1')">1x</li>
+      <li class = "option" onclick = "selectStrokeWidth('3')">3x</li>
+      <li class = "option" onclick = "selectStrokeWidth('5')">5x</li>
     </ul>
   </div>
   <canvas id="whiteboard"></canvas>
-
-  <div id="popUpBox" class="hidden">
-    <p>This is a pop-up box! You selected: <span id="selectedTool"></span></p>
-    <button onclick="closePopUp()">Close</button>
-  </div>
 
   <script src="whiteboard.js"></script>
 </body>
