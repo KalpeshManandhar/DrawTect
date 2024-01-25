@@ -1,0 +1,112 @@
+body {
+    font-family: 'Nunito';
+  }
+
+#whiteboard{
+    cursor: url('assets/pen.png'), auto;
+}
+
+#toolSelectionBox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+#penOptions {
+  position: absolute;
+  top: 60px;
+  left: 10px;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#penOptions .title{
+  display: flexbox;
+  position: relative;
+  align-items:center;
+  /* border: 2px solid; */
+  padding: 1px; 
+}
+
+.chooseColours,
+.chooseStroke{
+  list-style: none;
+  margin: 5px 5px 5px 5px;
+  display: flex;
+  justify-content: space-between;
+  /* border: 2px solid; */
+  margin-left: -30px;
+}
+
+.chooseColours .option{
+  align-items: center;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  position: relative;
+  margin-right: 10px;
+}
+
+.chooseColours .option:nth-child(5){
+  background: red;
+}
+.chooseColours .option:nth-child(2){
+  background: yellow;
+}
+.chooseColours .option:nth-child(3){
+  background: green;
+}
+.chooseColours .option:nth-child(4){
+  background: cyan;
+}
+.chooseColours .option:nth-child(1){
+  background: black;
+}
+
+.chooseColours .option:hover::before{
+  position:absolute;
+  content: "";
+  top : 50%;
+  left: 50%;
+  height: 12px;
+  width: 12px;
+  background: inherit;
+  border-radius: inherit;
+  border: 2px solid white;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.chooseStroke .option{
+  position:relative;
+  height: 20px;
+  width: 20px;
+  font-size: 12px;
+  align-content: center;
+  border: 1px solid #ccc ;
+  margin-right: 10px;
+}
+
+.chooseStroke .option:hover{
+  background: #ccc;
+  cursor: pointer;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+  }
+
+  canvas {
+    display: block;
+  }
+
+  .hidden {
+    display: none;
+  }
