@@ -8,4 +8,5 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(DT_EditorProvider.register(context));
 	context.subscriptions.push(DT_CodeActionsProvider.register(context));
 	console.log("Provider registered");
+
 }

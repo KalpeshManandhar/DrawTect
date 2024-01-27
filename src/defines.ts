@@ -9,3 +9,6 @@ export const EXTENSION_COMMANDS = {
     test: 'DrawTect.test',
     open: 'DrawTect.open',
 };
+
+
+export const WHITEBOARD_FOLDER = "whiteboard"

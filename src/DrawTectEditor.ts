@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from "fs";
 
-import {EXTENSION_COMMANDS} from './defines'
+import {EXTENSION_COMMANDS, WHITEBOARD_FOLDER} from './defines'
 
 interface DT_DocumentEdit{
 
@@ -81,31 +81,76 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
             enableScripts: true
         };
 
-        const scriptLocalUri = vscode.Uri.joinPath(this.context.extensionUri, 'media', 'dt_js.js');
-        const scriptUri = webviewPanel.webview.asWebviewUri(scriptLocalUri);
+        const whiteboardDir = `${this.context.extensionUri.fsPath}/${WHITEBOARD_FOLDER}`;
+        const whiteboardFolderUri = vscode.Uri.joinPath(this.context.extensionUri, WHITEBOARD_FOLDER);
+        const scriptUri = webviewPanel.webview.asWebviewUri(whiteboardFolderUri);
+
 
         this.a++;
-        webviewPanel.webview.html = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
 
-                <!--
-                Use a content security policy to only allow loading images from https or from our extension directory,
-                and only allow scripts that have a specific nonce.
-                -->
 
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-                <title>DRAWTECT</title>
-            </head>
-            <body>
-                <div> HELLO</div>
-                ${this.a}               
-                <script src="${scriptUri}"></script>
-            </body>
-            </html>`;
+        // fs.readFile(`${whiteboardFolderUri.fsPath}/whiteboard.html`, 'utf-8',
+        //     (err, data) => {
+        //         if (err) throw err;
+        //         console.log(data);
+        //         webviewPanel.webview.html = data;
+        //     }
+        // )
+        webviewPanel.webview.html = this.loadHtmlAsWebviewResource(webviewPanel.webview, whiteboardDir, "whiteboard.html");
+
+        // webviewPanel.webview.html = `
+        //     <!DOCTYPE html>
+        //     <html lang="en">
+        //     <head>
+        //         <meta charset="UTF-8">
+
+        //         <!--
+        //         Use a content security policy to only allow loading images from https or from our extension directory,
+        //         and only allow scripts that have a specific nonce.
+        //         -->
+
+        //         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        //         <title>DRAWTECT</title>
+        //     </head>
+        //     <body>
+        //         <div> HELLO</div>
+        //         ${this.a}               
+        //         <script src="${scriptUri}"></script>
+        //     </body>
+        //     </html>`;
     }
+
+
+    loadHtmlAsWebviewResource(webview: vscode.Webview, baseDir: string, htmlFile: string): string{
+        const fullHtmlPath = `${baseDir}/${htmlFile}`;
+        let str = fs.readFileSync(fullHtmlPath, 'utf-8');
+    
+        const scriptRegex = /<script [\w*\W*\s]*src\s*=\s*"([\\*/*.*\w*]*)">/;
+        const scriptSources = str.match(scriptRegex);
+    
+        if (scriptSources){
+            for (let i = 1; i< scriptSources.length; i++){	
+                const fileUri = vscode.Uri.file(`${baseDir}/${scriptSources[i]}`)
+                const fileWebviewUri = webview.asWebviewUri(fileUri);
+                str = str.replace(scriptSources[i], fileWebviewUri.toString());
+            }
+        }
+        
+        const linkRegex = /<link [\w*\W*\s]*href\s*=\s*"([\\*/*.*\w*]*)">/;
+        const linkSources = str.match(linkRegex);
+    
+        if (linkSources){
+            for (let i = 1; i< linkSources.length; i++){	
+                const fileUri = vscode.Uri.file(`${baseDir}/${linkSources[i]}`)
+                const fileWebviewUri = webview.asWebviewUri(fileUri);
+                str = str.replace(linkSources[i], fileWebviewUri.toString());
+            }
+        }
+    
+    
+        return str;
+    }	
 
 }
