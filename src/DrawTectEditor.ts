@@ -8,25 +8,14 @@ interface DT_DocumentEdit{
 }
 
 
-// class DT_Document implements vscode.CustomDocument{
-//     static async create(uri: vscode.Uri, 
-//                             backupId: string | undefined
-//                             dele
-//                         )
-
-// }
-
 
 export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
     constructor(
 		private readonly context: vscode.ExtensionContext
-	) { this.a = 0}
+	) {}
 
     static viewType = 'DrawTect.draw';
-    
-    a: number;
 
-    // static test = 'DrawTect.test';
 
     public static testCommand(): boolean{
         console.log("Test command executed");
@@ -78,48 +67,27 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
     ): Thenable<void> | void{
 
         webviewPanel.webview.options = {
-            enableScripts: true
+            enableScripts: true,
         };
-
+        
         const whiteboardDir = `${this.context.extensionUri.fsPath}/${WHITEBOARD_FOLDER}`;
-        const whiteboardFolderUri = vscode.Uri.joinPath(this.context.extensionUri, WHITEBOARD_FOLDER);
-        const scriptUri = webviewPanel.webview.asWebviewUri(whiteboardFolderUri);
-
-
-        this.a++;
-
-
-
-        // fs.readFile(`${whiteboardFolderUri.fsPath}/whiteboard.html`, 'utf-8',
-        //     (err, data) => {
-        //         if (err) throw err;
-        //         console.log(data);
-        //         webviewPanel.webview.html = data;
-        //     }
-        // )
         webviewPanel.webview.html = this.loadHtmlAsWebviewResource(webviewPanel.webview, whiteboardDir, "whiteboard.html");
 
-        // webviewPanel.webview.html = `
-        //     <!DOCTYPE html>
-        //     <html lang="en">
-        //     <head>
-        //         <meta charset="UTF-8">
+        console.log(document);
+        
+        vscode.workspace.onDidChangeTextDocument(e => {
+            // if the document with the changes is the same as this document
+            if (e.document.uri.toString() === document.uri.toString()){
+                // update webview 
+            }
+        })
 
-        //         <!--
-        //         Use a content security policy to only allow loading images from https or from our extension directory,
-        //         and only allow scripts that have a specific nonce.
-        //         -->
+        // receive message from webview
+        webviewPanel.webview.onDidReceiveMessage((e) => {
+            
+        })
 
-        //         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        //         <title>DRAWTECT</title>
-        //     </head>
-        //     <body>
-        //         <div> HELLO</div>
-        //         ${this.a}               
-        //         <script src="${scriptUri}"></script>
-        //     </body>
-        //     </html>`;
     }
 
 
@@ -152,5 +120,24 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
     
         return str;
     }	
+
+    sendMessageToWebview(webview: vscode.Webview, type: string, data: any){
+        webview.postMessage({
+            type: type,
+            data: data 
+        });
+    }
+
+    handleMessageFromWebview(document: vscode.TextDocument, event: any){
+        switch (event.type){
+            case "stroke-add":{
+                console.log("Stroke added");
+            }
+            case "stroke-remove":{
+                console.log("Stroke removed");
+            }
+        }
+    }
+
 
 }
