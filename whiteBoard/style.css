@@ -11,7 +11,6 @@ body {
     top: 10px;
     left: 10px;
     background-color: #fff;
-    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
   }
@@ -23,7 +22,7 @@ body {
 
 #penOptions{
   position: absolute;
-  top: 60px;
+  top: 70px;
   left: 10px;
   background-color: #fff;
   padding: 10px;
@@ -39,25 +38,36 @@ body {
   padding: 1px; 
 }
 
+#fill {
+  position: relative;
+  margin-top: 7px;
+  cursor: pointer;
+  height: 18px;
+  width: 18px;
+}
+#fill:checked ~ label{
+  color: #4a98f7;
+}
+
 .chooseColours,
-.chooseStroke{
+.chooseStroke,
+.tools{
   list-style: none;
-  margin: 5px 5px 5px 5px;
   display: flex;
-  justify-content: space-between;
-  /* border: 2px solid; */
-  margin-left: -30px;
+  margin: 5px 5px 5px 5px;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0;
 }
 
 .chooseColours .option{
-  align-items: center;
+  text-align: center;
   height: 20px;
   width: 20px;
   border-radius: 50%;
   position: relative;
-  margin-right: 10px;
+  margin:0 5px;
 }
-
 .chooseColours .option:nth-child(5){
   background: red;
 }
@@ -73,14 +83,15 @@ body {
 .chooseColours .option:nth-child(1){
   background: black;
 }
-
-.chooseColours .option:hover::before{
+.chooseColours .option:hover::before, 
+.chooseColours .option.active::before{
   position:absolute;
   content: "";
   top : 50%;
   left: 50%;
   height: 12px;
   width: 12px;
+  align-content: center;
   background: inherit;
   border-radius: inherit;
   border: 2px solid white;
@@ -88,18 +99,33 @@ body {
   cursor: pointer;
 }
 
+.tools .option,
 .chooseStroke .option{
-  position:relative;
-  height: 20px;
-  width: 20px;
-  font-size: 12px;
-  align-content: center;
+  text-align: center;
+  position: relative;
+  height: 40px;
+  width:40px;
+  border-radius: 20%;
+  margin:0 2px;
+}
+.chooseStroke .option{
+  height: 35px;
+  width: 35px;
   border: 1px solid #ccc ;
-  margin-right: 10px;
 }
 
-.chooseStroke .option:hover{
-  background: #ccc;
+.tools img,
+.chooseStroke img{
+  margin-top: 10px;
+  width: 18px; /* Adjust the size as needed */
+  height: 18px;
+}
+
+
+
+.chooseStroke .option:is(:hover, .active),
+.tools .option:is(:hover, .active){
+  background: #f8eafc;
   cursor: pointer;
 }
 
