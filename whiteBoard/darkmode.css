@@ -1,18 +1,18 @@
 body {
-    font-family: 'Nunito';
+	font-family: 'Nunito';
   }
 
 #whiteboard{
-    cursor: url('assets/pen.png'), auto;
+	cursor: url('assets/pen.png'), auto;
 }
 
 #toolSelectionBox {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	background-color: #1b1b1b;
+	border: 1px solid #ccc;
+	border-radius: 5px;
   }
 
 #penOptions.disabled{
@@ -24,7 +24,7 @@ body {
   position: absolute;
   top: 70px;
   left: 10px;
-  background-color: #fff;
+  background-color: #1b1b1b;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -34,6 +34,7 @@ body {
   display: flexbox;
   position: relative;
   align-items:center;
+  color: #f8eafc;
   /* border: 2px solid; */
   padding: 1px; 
 }
@@ -130,14 +131,14 @@ body {
 }
 
 body {
-    margin: 0;
-    overflow: hidden;
+	margin: 0;
+	overflow: hidden;
   }
 
   canvas {
-    display: block;
+	display: block;
   }
 
   .hidden {
-    display: none;
+	display: none;
   }

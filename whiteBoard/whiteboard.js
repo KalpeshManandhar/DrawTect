@@ -1,4 +1,8 @@
 // whiteboard.js
+// detect user's colour mode
+const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+document.getElementById('styles').setAttribute('href', prefersDarkMode ? 'darkmode.css' : 'style.css');
+
 const canvas = document.getElementById('whiteboard'),
 context = canvas.getContext('2d'),
 colourButtons = document.querySelectorAll(".color"),
