@@ -3,30 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" id = "styles">
   <title>DrawTect</title>
 </head>
 <body>
   <div id="toolSelectionBox">
-    <label><input type="radio" name="tool" value="pen" checked> Pen</label>
-    <label><input type="radio" name="tool" value="eraser"> Eraser</label>
+    <!-- <label><input type="radio" name="tool" value="pen" checked> Pen</label>
+    <label><input type="radio" name="tool" value="eraser"> Eraser</label> -->
+    <!-- <label><input type="radio" name="tool" value="rect"> Rect</label> -->
+    <ul class = "tools">
+    <li class = "option active tool" id = "pen"> <img src = "assets/pen.png" alt = ""></li>
+    <li class = "option tool" id = "eraser"> <img src = "assets/eraser.svg" alt = ""></li>
+    <li class = "option tool" id = "circle"> <img src = "assets/circle.svg" alt = ""></li>
+    <li class = "option tool" id = "rectangle"><img src = "assets/rectangle.svg" alt = ""></li>
+    <li class = "option tool" id = "diamond"> <img src = "assets/diamond.svg" alt = ""></li>
+    </ul>
   </div>
+  <div id = "functions">
+    <button class = "option clearCanvas"> Clear</button>
+    <button class = "option saveImage"> Save</button>
+    </div>
   <div id = "penOptions">
     <label class="title">Colours
     <ul class = "chooseColours">
-      <li class = "option" onclick="selectColour('Black')"></li>
-      <li class = "option" onclick="selectColour('Yellow')"></li>
-      <li class = "option" onclick="selectColour('Green')"></li>
-      <li class = "option" onclick="selectColour('Cyan')"></li>
-      <li class = "option" onclick="selectColour('Red')"></li>
+      <li class = "option c active color" id = "Black"></li>
+      <li class = "option c color" id = "Yellow"></li>
+      <li class = "option c color" id = "Green"></li>
+      <li class = "option c color" id = "Cyan"></li>
+      <li class = "option c color" id = "Red"></li>
     </ul>
   </label>
     <label class = "title"> Stroke Width</label>
     <ul class = "chooseStroke">
-      <li class = "option" onclick = "selectStrokeWidth('1')">1x</li>
-      <li class = "option" onclick = "selectStrokeWidth('3')">3x</li>
-      <li class = "option" onclick = "selectStrokeWidth('5')">5x</li>
+      <li class = "option s active stroke" id = "1"><img src = "assets/1x.svg" alt = ""></li>
+      <li class = "option s stroke" id = "3"><img src = "assets/3x.svg" alt = ""></li>
+      <li class = "option s stroke" id = "5"><img src = "assets/5x.svg" alt = ""></li>
     </ul>
+    <label class="title"><input type = "checkbox" id = "fill">Fill Color</label>
   </div>
   <canvas id="whiteboard"></canvas>
 
