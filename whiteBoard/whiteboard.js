@@ -9,6 +9,8 @@ colourButtons = document.querySelectorAll(".color"),
 strokeButtons = document.querySelectorAll(".stroke"),
 penOptions = document.getElementById('penOptions'),
 fillColor = document.querySelector("#fill"),
+savebtn = document.querySelector(".saveImage"),
+clearbtn = document.querySelector(".clearCanvas"),
 toolButtons = document.querySelectorAll(".tool");
 
 
@@ -130,6 +132,17 @@ strokeButtons.forEach(btn2=> {
     btn2.classList.add("active");
     tempWidth = btn2.id;
   });
+});
+
+clearbtn.addEventListener("click", () =>{
+  context.clearRect(0,0, canvas.width, canvas.height);
+});
+
+savebtn.addEventListener("click", ()=>{
+  const link = document.createElement("a");
+  link.download = `${Date.now()}.jpg`;
+  link.href = canvas.toDataURL();
+  link.click();
 });
 
 canvas.addEventListener('mousedown', startPosition);

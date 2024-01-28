@@ -6,7 +6,8 @@ body {
 	cursor: url('assets/pen.png'), auto;
 }
 
-#toolSelectionBox {
+#toolSelectionBox,
+#functions {
 	position: absolute;
 	top: 10px;
 	left: 10px;
@@ -14,6 +15,10 @@ body {
 	border: 1px solid #ccc;
 	border-radius: 5px;
   }
+
+#functions{
+	left:245px;
+}
 
 #penOptions.disabled{
   pointer-events: none;
@@ -114,6 +119,17 @@ body {
   width: 35px;
   border: 1px solid #ccc ;
 }
+#functions .option{
+	text-align: center;
+	position: relative;
+	height: 40px;
+	width:50px;
+	border-radius: 20%;
+	margin:5px 3px 5px 3px;
+	border: 1px solid #ccc ;
+	background-color: #1b1b1b;
+	color: #aaa5a5;
+  }
 
 .tools img,
 .chooseStroke img{
@@ -125,7 +141,8 @@ body {
 
 
 .chooseStroke .option:is(:hover, .active),
-.tools .option:is(:hover, .active){
+.tools .option:is(:hover, .active),
+#functions .option:hover{
   background: #f8eafc;
   cursor: pointer;
 }
