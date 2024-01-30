@@ -1,7 +1,36 @@
 // whiteboard.js
 // detect user's colour mode
-const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-document.getElementById('styles').setAttribute('href', prefersDarkMode ? 'darkmode.css' : 'style.css');
+function isDarkModePreferred() {
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function toggleColorScheme() {
+  const toolbox = document.getElementById('toolSelectionBox'),
+  penbox = document.getElementById('penOptions'),
+  functionBox = document.getElementById('functions'),
+  functionOptions = document.querySelectorAll(".btn");
+
+  if (isDarkModePreferred()) {
+      toolbox.classList.add('dark-mode');
+      penbox.classList.add('dark-mode');
+      functionBox.classList.add('dark-mode');
+      functionOptions.forEach(btn => {
+        btn.classList.add('dark-mode');
+      });
+  } else {
+    toolbox.classList.remove('dark-mode');
+    penbox.classList.remove('dark-mode');
+    functionBox.classList.remove('dark-mode');
+    
+    functionOptions.forEach(btn => {
+      btn.classList.remove('dark-mode');
+    });
+  }
+}
+toggleColorScheme();
+
+// Event listener for changes in color scheme preference
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggleColorScheme);
 
 const canvas = document.getElementById('whiteboard'),
 context = canvas.getContext('2d'),
