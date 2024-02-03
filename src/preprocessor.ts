@@ -2,14 +2,6 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 
 import { PREPROCESSOR_EXPORT_FOLDER, WHITEBOARD_FOLDER } from './defines';
-import { relative } from 'node:path/win32';
-
-
-
-
-
-
-
 
 export class Preprocessor{
 	workspaceDir: string;
