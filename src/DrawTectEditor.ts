@@ -102,7 +102,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
 
         // receive message from webview
         webviewPanel.webview.onDidReceiveMessage((e) => {
-            
+            this.handleMessageFromWebview(document, e);
         });
 
 
@@ -117,47 +117,6 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
     }
 
 
-    loadHtmlAsWebviewResource(webview: vscode.Webview, baseDir: string, htmlFile: string): string{
-        const fullHtmlPath = `${baseDir}/${htmlFile}`;
-        let str = fs.readFileSync(fullHtmlPath, 'utf-8');
-    
-        const scriptRegex = /<script [\w*\W*\s]*src\s*=\s*"([\\*/*.*\w*]*)">/;
-        const scriptSources = str.match(scriptRegex);
-    
-        if (scriptSources){
-            for (let i = 1; i< scriptSources.length; i++){	
-                const fileUri = vscode.Uri.file(`${baseDir}/${scriptSources[i]}`);
-                const fileWebviewUri = webview.asWebviewUri(fileUri);
-                str = str.replace(scriptSources[i], fileWebviewUri.toString());
-            }
-        }
-        
-        const linkRegex = /<link [\w*\W*\s]*href\s*=\s*"([\\*/*.*\w*]*)"[\w*\W*\s]*>/;
-        const linkSources = str.match(linkRegex);
-    
-        if (linkSources){
-            for (let i = 1; i< linkSources.length; i++){	
-                const fileUri = vscode.Uri.file(`${baseDir}/${linkSources[i]}`);
-                const fileWebviewUri = webview.asWebviewUri(fileUri);
-                str = str.replace(linkSources[i], fileWebviewUri.toString());
-            }
-        }
-        
-        const imgRegex = /<img [\w*\W*\s]*src\s*=\s*"([\\*/*.*\w*]*)"[\w*\W*\s]*>/;
-        const imgSources = str.match(imgRegex);
-    
-        if (imgSources){
-            for (let i = 1; i< imgSources.length; i++){	
-                const fileUri = vscode.Uri.file(`${baseDir}/${imgSources[i]}`);
-                const fileWebviewUri = webview.asWebviewUri(fileUri);
-                str = str.replace(imgSources[i], fileWebviewUri.toString());
-            }
-        }
-    
-    
-        return str;
-    }	
-
     sendMessageToWebview(webview: vscode.Webview, type: string, data: any){
         webview.postMessage({
             type: type,
@@ -169,6 +128,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         switch (event.type){
             case "stroke-add":{
                 console.log("Stroke added");
+                console.log(event.data);
                 break;
             }
             case "stroke-remove":{

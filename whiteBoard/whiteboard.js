@@ -119,6 +119,11 @@ function endPosition() {
   strokes.push(currentStroke);
   console.log(currentStroke);
   //context.beginPath();
+
+  vscode.postMessage({
+    type: "stroke-add",
+    data: currentStroke
+  });
   singleElement = false;
 //context.beginPath();
 }
