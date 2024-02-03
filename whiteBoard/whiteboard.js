@@ -3,8 +3,37 @@
 import { vscode } from "interface.js";
 
 // detect user's colour mode
-const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-document.getElementById('styles').setAttribute('href', prefersDarkMode ? 'darkmode.css' : 'style.css');
+function isDarkModePreferred() {
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function toggleColorScheme() {
+  const toolbox = document.getElementById('toolSelectionBox'),
+  penbox = document.getElementById('penOptions'),
+  functionBox = document.getElementById('functions'),
+  functionOptions = document.querySelectorAll(".btn");
+
+  if (isDarkModePreferred()) {
+      toolbox.classList.add('dark-mode');
+      penbox.classList.add('dark-mode');
+      functionBox.classList.add('dark-mode');
+      functionOptions.forEach(btn => {
+        btn.classList.add('dark-mode');
+      });
+  } else {
+    toolbox.classList.remove('dark-mode');
+    penbox.classList.remove('dark-mode');
+    functionBox.classList.remove('dark-mode');
+    
+    functionOptions.forEach(btn => {
+      btn.classList.remove('dark-mode');
+    });
+  }
+}
+toggleColorScheme();
+
+// Event listener for changes in color scheme preference
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggleColorScheme);
 
 const canvas = document.getElementById('whiteboard'),
 context = canvas.getContext('2d'),
@@ -21,10 +50,11 @@ toolButtons = document.querySelectorAll(".tool");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+//initialization
 let tempWidth = 1,
 tempColour = 'black',
 selectedTool = "pen",
-prevMousePosX , prevMousePosY, snapshot;
+prevMousePosX , prevMousePosY, snapshot, singleElement = true;
 
 
 let strokes = [];
@@ -32,12 +62,48 @@ let currentStroke = [];
 
 let drawing = false;
 
+class Stack{
+  constructor(){
+    this.items = [];
+  }
+
+  push(element){
+    this.items.push(element);
+  }
+
+  // Pop out all
+  pop(){
+    if(this.items.length === 0){
+      return null;
+    }
+    return this.items.pop();
+  }
+
+  // peek the previous
+  peek(){
+    return this.items.length === 0 ? 
+    null : this.items[this.items.length --];
+  }
+
+  isEmpty(){
+    return this.items.length === 0;
+  }
+
+  // stack size
+  size(){
+    return this.items.length;
+  }
+}
+
+const snapshotStack = new Stack();
+
 function startPosition(e) {
   console.log("start");
   currentStroke = [];
   currentStroke.push({x: e.clientX, y: e.clientY});
 
   drawing = true;
+  singleElement = true;
   prevMousePosX = e.clientX - canvas.getBoundingClientRect().left;
   prevMousePosY = e.clientY - canvas.getBoundingClientRect().top;
   context.beginPath();
@@ -53,6 +119,8 @@ function endPosition() {
   strokes.push(currentStroke);
   console.log(currentStroke);
   //context.beginPath();
+  singleElement = false;
+//context.beginPath();
 }
 
 const drawRectangle = (e) => {
@@ -117,8 +185,25 @@ function draw(e) {
     currentStroke.push({x: e.clientX, y: e.clientY});
     context.stroke();
   }
+
+  if(singleElement){
+    snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
+    singleElement = false;  
+  }
 }
 
+//keyboard Event Listener
+document.addEventListener('keydown', function(event) {
+
+  if(event.ctrlKey && event.key === 'z' ){
+    if(!snapshotStack.isEmpty()){
+      snapshot = snapshotStack.pop();
+      context.putImageData(snapshot,0,0);
+    }
+  }
+});
+
+// Mouse Event Listeners
 toolButtons.forEach(btn =>{
     btn.addEventListener("click", ()=> {
       //updating the active status of tools

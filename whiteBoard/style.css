@@ -18,6 +18,7 @@ body {
 #functions{
   left:245px;
 }
+
 #penOptions.disabled{
   pointer-events: none;
   opacity: 0;
@@ -156,3 +157,17 @@ body {
   .hidden {
     display: none;
   }
+
+#toolSelectionBox.dark-mode,
+#functions.dark-mode,
+#penOptions.dark-mode,
+#functions .option.dark-mode{
+  background-color: #1b1b1b;
+  color: #f8eafc;
+}
+
+#functions .option.dark-mode:hover{
+  background: #f8eafc;
+  color: #1b1b1b;
+  cursor: pointer;
+}
