@@ -47,16 +47,53 @@ toolButtons = document.querySelectorAll(".tool");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+//initialization
 let tempWidth = 1,
 tempColour = 'black',
 selectedTool = "pen",
-prevMousePosX , prevMousePosY, snapshot;
+prevMousePosX , prevMousePosY, snapshot, singleElement = true;
 
 
 let drawing = false;
 
+class Stack{
+  constructor(){
+    this.items = [];
+  }
+
+  push(element){
+    this.items.push(element);
+  }
+
+  // Pop out all
+  pop(){
+    if(this.items.length === 0){
+      return null;
+    }
+    return this.items.pop();
+  }
+
+  // peek the previous
+  peek(){
+    return this.items.length === 0 ? 
+    null : this.items[this.items.length --];
+  }
+
+  isEmpty(){
+    return this.items.length === 0;
+  }
+
+  // stack size
+  size(){
+    return this.items.length;
+  }
+}
+
+const snapshotStack = new Stack();
+
 function startPosition(e) {
   drawing = true;
+  singleElement = true;
   prevMousePosX = e.clientX - canvas.getBoundingClientRect().left;
   prevMousePosY = e.clientY - canvas.getBoundingClientRect().top;
   context.beginPath();
@@ -68,7 +105,8 @@ function startPosition(e) {
 
 function endPosition() {
   drawing = false;
-  //context.beginPath();
+  singleElement = false;
+//context.beginPath();
 }
 
 const drawRectangle = (e) => {
@@ -132,8 +170,25 @@ function draw(e) {
   context.lineTo(e.clientX, e.clientY);
   context.stroke();
   }
+
+  if(singleElement){
+    snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
+    singleElement = false;  
+  }
 }
 
+//keyboard Event Listener
+document.addEventListener('keydown', function(event) {
+
+  if(event.ctrlKey && event.key === 'z' ){
+    if(!snapshotStack.isEmpty()){
+      snapshot = snapshotStack.pop();
+      context.putImageData(snapshot,0,0);
+    }
+  }
+});
+
+// Mouse Event Listeners
 toolButtons.forEach(btn =>{
     btn.addEventListener("click", ()=> {
       //updating the active status of tools
