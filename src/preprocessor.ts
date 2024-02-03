@@ -65,8 +65,8 @@ export class Preprocessor{
 						this.preprocessAndExportJS(
 							relDirPath, file  
 						);
-							console.log(`JS File: ${file}`);
-							break;
+						console.log(`JS File: ${file}`);
+						break;
 					}
 					case "css":{
 						this.preprocessAndExportCSS(

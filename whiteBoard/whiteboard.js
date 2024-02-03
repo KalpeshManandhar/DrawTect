@@ -1,4 +1,7 @@
 // whiteboard.js
+
+import { vscode } from "interface.js";
+
 // detect user's colour mode
 const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 document.getElementById('styles').setAttribute('href', prefersDarkMode ? 'darkmode.css' : 'style.css');
@@ -24,9 +27,16 @@ selectedTool = "pen",
 prevMousePosX , prevMousePosY, snapshot;
 
 
+let strokes = [];
+let currentStroke = [];
+
 let drawing = false;
 
 function startPosition(e) {
+  console.log("start");
+  currentStroke = [];
+  currentStroke.push({x: e.clientX, y: e.clientY});
+
   drawing = true;
   prevMousePosX = e.clientX - canvas.getBoundingClientRect().left;
   prevMousePosY = e.clientY - canvas.getBoundingClientRect().top;
@@ -39,6 +49,9 @@ function startPosition(e) {
 
 function endPosition() {
   drawing = false;
+
+  strokes.push(currentStroke);
+  console.log(currentStroke);
   //context.beginPath();
 }
 
@@ -99,9 +112,10 @@ function draw(e) {
     drawCircle(e);
   }
   else{
-  context.strokeStyle = selectedTool === "eraser" ? '#fff':tempColour;
-  context.lineTo(e.clientX, e.clientY);
-  context.stroke();
+    context.strokeStyle = selectedTool === "eraser" ? '#fff':tempColour;
+    context.lineTo(e.clientX, e.clientY);
+    currentStroke.push({x: e.clientX, y: e.clientY});
+    context.stroke();
   }
 }
 
