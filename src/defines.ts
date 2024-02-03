@@ -15,3 +15,5 @@ export const EXTENSION_COMMANDS = {
 export const WHITEBOARD_FOLDER = "whiteboard";
 // the dir with the preprocessed code, exported by the preprocessor
 export const PREPROCESSOR_EXPORT_FOLDER = "preprocessed";
+
+export const DEV_MODE = true;

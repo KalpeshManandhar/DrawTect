@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import * as fs from "fs";
 
-import {EXTENSION_COMMANDS, WHITEBOARD_FOLDER} from './defines'
+import {DEV_MODE, EXTENSION_COMMANDS, PREPROCESSOR_EXPORT_FOLDER, WHITEBOARD_FOLDER} from './defines';
+import { Preprocessor } from './preprocessor';
 
 interface DT_DocumentEdit{
 
@@ -10,16 +11,22 @@ interface DT_DocumentEdit{
 
 
 export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
+    
+    preprocessed: boolean; 
+    static viewType = 'DrawTect.draw';
+
+
     constructor(
 		private readonly context: vscode.ExtensionContext
-	) {}
+	) {
+        this.preprocessed = false;
+    }
 
-    static viewType = 'DrawTect.draw';
 
 
     public static testCommand(): boolean{
         console.log("Test command executed");
-        return true
+        return true;
     }
 
     public static async openFileCommand(relativePath: string){
@@ -35,10 +42,10 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         }
 
         const baseUri = workspaces[0].uri;
-        const filePath = `${baseUri.fsPath}/${relativePath}`
+        const filePath = `${baseUri.fsPath}/${relativePath}`;
 
         if (!fs.existsSync(filePath)){
-            console.error(`${filePath} doesn't seem to exist.`)
+            console.error(`${filePath} doesn't seem to exist.`);
             return;
         }
 
@@ -70,9 +77,20 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
             enableScripts: true,
         };
         
-        const whiteboardDir = `${this.context.extensionUri.fsPath}/${WHITEBOARD_FOLDER}`;
-        webviewPanel.webview.html = this.loadHtmlAsWebviewResource(webviewPanel.webview, whiteboardDir, "whiteboard.html");
-
+        // const whiteboardDir = `${this.context.extensionUri.fsPath}/${WHITEBOARD_FOLDER}`;
+        // webviewPanel.webview.html = this.loadHtmlAsWebviewResource(webviewPanel.webview, whiteboardDir, "whiteboard.html");
+        
+        if (DEV_MODE && !this.preprocessed){
+            const preprocessor = new Preprocessor(this.context.extensionPath, webviewPanel.webview);
+            preprocessor.preprocessDir(WHITEBOARD_FOLDER);
+            this.preprocessed = true;
+        }
+        
+        webviewPanel.webview.html = this.getFileContent(
+            `${this.context.extensionPath}/${PREPROCESSOR_EXPORT_FOLDER}/whiteboard.html`
+        );
+        
+        
         console.log(document);
         
         vscode.workspace.onDidChangeTextDocument(e => {
@@ -80,14 +98,22 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
             if (e.document.uri.toString() === document.uri.toString()){
                 // update webview 
             }
-        })
+        });
 
         // receive message from webview
         webviewPanel.webview.onDidReceiveMessage((e) => {
             
-        })
+        });
 
 
+    }
+
+    getFileContent(absPath: string): string{
+        if (!fs.existsSync(absPath))
+            return "";
+        
+        let str = fs.readFileSync(absPath, 'utf-8');
+        return str;
     }
 
 
@@ -100,20 +126,31 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
     
         if (scriptSources){
             for (let i = 1; i< scriptSources.length; i++){	
-                const fileUri = vscode.Uri.file(`${baseDir}/${scriptSources[i]}`)
+                const fileUri = vscode.Uri.file(`${baseDir}/${scriptSources[i]}`);
                 const fileWebviewUri = webview.asWebviewUri(fileUri);
                 str = str.replace(scriptSources[i], fileWebviewUri.toString());
             }
         }
         
-        const linkRegex = /<link [\w*\W*\s]*href\s*=\s*"([\\*/*.*\w*]*)">/;
+        const linkRegex = /<link [\w*\W*\s]*href\s*=\s*"([\\*/*.*\w*]*)"[\w*\W*\s]*>/;
         const linkSources = str.match(linkRegex);
     
         if (linkSources){
             for (let i = 1; i< linkSources.length; i++){	
-                const fileUri = vscode.Uri.file(`${baseDir}/${linkSources[i]}`)
+                const fileUri = vscode.Uri.file(`${baseDir}/${linkSources[i]}`);
                 const fileWebviewUri = webview.asWebviewUri(fileUri);
                 str = str.replace(linkSources[i], fileWebviewUri.toString());
+            }
+        }
+        
+        const imgRegex = /<img [\w*\W*\s]*src\s*=\s*"([\\*/*.*\w*]*)"[\w*\W*\s]*>/;
+        const imgSources = str.match(imgRegex);
+    
+        if (imgSources){
+            for (let i = 1; i< imgSources.length; i++){	
+                const fileUri = vscode.Uri.file(`${baseDir}/${imgSources[i]}`);
+                const fileWebviewUri = webview.asWebviewUri(fileUri);
+                str = str.replace(imgSources[i], fileWebviewUri.toString());
             }
         }
     
@@ -132,9 +169,11 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         switch (event.type){
             case "stroke-add":{
                 console.log("Stroke added");
+                break;
             }
             case "stroke-remove":{
                 console.log("Stroke removed");
+                break;
             }
         }
     }
