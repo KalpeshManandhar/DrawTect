@@ -77,8 +77,6 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
             enableScripts: true,
         };
         
-        // const whiteboardDir = `${this.context.extensionUri.fsPath}/${WHITEBOARD_FOLDER}`;
-        // webviewPanel.webview.html = this.loadHtmlAsWebviewResource(webviewPanel.webview, whiteboardDir, "whiteboard.html");
         
         if (DEV_MODE && !this.preprocessed){
             const preprocessor = new Preprocessor(this.context.extensionPath, webviewPanel.webview);
@@ -91,12 +89,13 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         );
         
         
-        console.log(document);
-        
         vscode.workspace.onDidChangeTextDocument(e => {
             // if the document with the changes is the same as this document
             if (e.document.uri.toString() === document.uri.toString()){
                 // update webview 
+                const docInfo = this.getDocumentAsJson(document);
+
+                this.sendMessageToWebview(webviewPanel.webview, "update", docInfo);
             }
         });
 
@@ -105,6 +104,10 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
             this.handleMessageFromWebview(document, e);
         });
 
+        const docInfo = this.getDocumentAsJson(document);
+
+        this.sendMessageToWebview(webviewPanel.webview, "update", docInfo);
+        
 
     }
 
@@ -124,11 +127,25 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         });
     }
 
+    getDocumentAsJson(document: vscode.TextDocument): any {
+		const text = document.getText();
+		if (text.trim().length == 0) {
+			return {strokes: []};
+		}
+
+		try {
+			return JSON.parse(text);
+		} catch {
+			console.log('Content is not valid json');
+            return {strokes: []};
+		}
+	}
+
+
     handleMessageFromWebview(document: vscode.TextDocument, event: any){
         switch (event.type){
             case "stroke-add":{
-                console.log("Stroke added");
-                console.log(event.data);
+                this.docAddNewStroke(document, event.data);
                 break;
             }
             case "stroke-remove":{
@@ -136,6 +153,22 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
                 break;
             }
         }
+    }
+
+    docAddNewStroke(document: vscode.TextDocument, strokeData: any){
+        const docContent = this.getDocumentAsJson(document);
+        docContent.strokes.push(strokeData);
+
+        console.log(docContent);
+
+        const edit = new vscode.WorkspaceEdit();
+        edit.replace(
+            document.uri,
+            new vscode.Range(0, 0, document.lineCount, 0),
+            JSON.stringify(docContent)
+        );
+
+        vscode.workspace.applyEdit(edit);
     }
 
 

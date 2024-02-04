@@ -197,6 +197,40 @@ function draw(e) {
   }
 }
 
+
+// update webview from file: draw the strokes 
+function updateFromFile(strokesArr){
+  for (let stroke of strokesArr){
+    context.moveTo(stroke[0].x, stroke[0].y);
+    for (let point of stroke){
+      context.lineTo(point.x, point.y);
+      context.stroke();
+    }
+  }
+}
+
+
+
+
+// messages from extension to webview
+window.addEventListener('message', e => {
+  const message = e.data;
+  console.log("received messgae from ext")
+
+  switch (message.type){
+    case 'update':{
+      console.log("data from ext");
+      console.log(message.data);
+      updateFromFile(message.data.strokes);
+      break;
+    }
+  }
+
+})
+
+
+
+
 //keyboard Event Listener
 document.addEventListener('keydown', function(event) {
 
