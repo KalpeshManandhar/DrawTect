@@ -19,7 +19,11 @@ body {
   left:245px;
 }
 
-#penOptions.disabled{
+
+#penOptions.disabled,
+#toolSelectionBox.disabled,
+#functions.disabled,
+#whiteboard.disabled{
   pointer-events: none;
   opacity: 0;
 }

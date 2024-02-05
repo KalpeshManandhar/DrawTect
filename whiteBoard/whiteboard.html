@@ -7,7 +7,7 @@
   <title>DrawTect</title>
 </head>
 <body>
-  <div id="toolSelectionBox">
+  <div id="toolSelectionBox" class = "disabled">
     <!-- <label><input type="radio" name="tool" value="pen" checked> Pen</label>
     <label><input type="radio" name="tool" value="eraser"> Eraser</label> -->
     <!-- <label><input type="radio" name="tool" value="rect"> Rect</label> -->
@@ -19,11 +19,11 @@
     <li class = "option tool" id = "diamond"> <img src = "assets/diamond.svg" alt = ""></li>
     </ul>
   </div>
-  <div id = "functions">
+  <div id = "functions" class = "disabled">
     <button class = "option btn clearCanvas"> Clear</button>
     <button class = "option btn saveImage"> Save</button>
     </div>
-  <div id = "penOptions">
+  <div id = "penOptions" class = "disabled">
     <label class="title">Colours
     <ul class = "chooseColours">
       <li class = "option c active color" id = "Black"></li>
@@ -33,7 +33,7 @@
       <li class = "option c color" id = "Red"></li>
     </ul>
   </label>
-    <label class = "title"> Stroke Width</label>
+    <label class = "title" > Stroke Width</label>
     <ul class = "chooseStroke">
       <li class = "option s active stroke" id = "1"><img src = "assets/1x.svg" alt = ""></li>
       <li class = "option s stroke" id = "3"><img src = "assets/3x.svg" alt = ""></li>
@@ -41,7 +41,7 @@
     </ul>
     <label class="title"><input type = "checkbox" id = "fill">Fill Color</label>
   </div>
-  <canvas id="whiteboard"></canvas>
+  <canvas id="whiteboard" class = "disabled"></canvas>
 
   <script type="module" src="whiteboard.js"></script>
   <script type="module" src="interface.js"></script>
