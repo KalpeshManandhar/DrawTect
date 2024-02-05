@@ -1,6 +1,6 @@
 // whiteboard.js
 
-import { vscode } from "interface.js";
+//import { vscode } from "interface.js";
 
 // detect user's colour mode
 function isDarkModePreferred() {
@@ -35,13 +35,16 @@ toggleColorScheme();
 // Event listener for changes in color scheme preference
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggleColorScheme);
 
+
 const canvas = document.getElementById('whiteboard'),
 context = canvas.getContext('2d'),
 colourButtons = document.querySelectorAll(".color"),
 strokeButtons = document.querySelectorAll(".stroke"),
 penOptions = document.getElementById('penOptions'),
+tools = document.getElementById('toolSelectionBox'),
+fun = document.getElementById('functions'),
 fillColor = document.querySelector("#fill"),
-savebtn = document.querySelector(".saveImage"),
+storebtn = document.querySelector(".saveImage"),
 clearbtn = document.querySelector(".clearCanvas"),
 toolButtons = document.querySelectorAll(".tool");
 
@@ -53,7 +56,7 @@ canvas.height = window.innerHeight;
 //initialization
 let tempWidth = 1,
 tempColour = 'black',
-selectedTool = "pen",
+selectedTool = "pen",allowUndo = true,
 prevMousePosX , prevMousePosY, snapshot, singleElement = true;
 
 
@@ -197,6 +200,13 @@ function draw(e) {
   }
 }
 
+function disableWhiteboard(){
+  allowUndo = false;
+  penOptions.classList.add("disabled");
+  tools.classList.add("disabled");
+  fun.classList.add("disabled");
+}
+
 
 // update webview from file: draw the strokes 
 function updateFromFile(strokesArr){
@@ -226,19 +236,41 @@ window.addEventListener('message', e => {
     }
   }
 
-})
+});
 
 
 
 
-//keyboard Event Listener
+// keyboard Event Listener
 document.addEventListener('keydown', function(event) {
 
+  if(!allowUndo){
+    return;
+  }
   if(event.ctrlKey && event.key === 'z' ){
     if(!snapshotStack.isEmpty()){
       snapshot = snapshotStack.pop();
       context.putImageData(snapshot,0,0);
     }
+  }
+});
+
+document.addEventListener('keydown', function(event){
+
+  if(event.key === 'e'){
+    canvas.style.pointerEvents = 'auto';
+    canvas.classList.remove("disabled");
+    penOptions.classList.remove("disabled");
+    tools.classList.remove("disabled");
+    fun.classList.remove("disabled");
+    allowUndo = true;
+  }
+});
+
+document.addEventListener('keydown', function(event){
+  if(event.key === 's'){
+    disableWhiteboard();
+    canvas.style.pointerEvents = 'none';
   }
 });
 
@@ -276,11 +308,13 @@ clearbtn.addEventListener("click", () =>{
   context.clearRect(0,0, canvas.width, canvas.height);
 });
 
-savebtn.addEventListener("click", ()=>{
-  const link = document.createElement("a");
-  link.download = `${Date.now()}.jpg`;
-  link.href = canvas.toDataURL();
-  link.click();
+storebtn.addEventListener("click", ()=>{
+  // const link = document.createElement("a");
+  // link.download = `${Date.now()}.jpg`;
+  // link.href = canvas.toDataURL();
+  // link.click();
+  disableWhiteboard();
+  canvas.style.pointerEvents = 'none';
 });
 
 canvas.addEventListener('mousedown', startPosition);
