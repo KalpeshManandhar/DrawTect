@@ -172,6 +172,11 @@ const drawCircle = (e) => {
 
 function draw(e) {
   if (!drawing) return;
+  
+  if(singleElement){
+    snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
+    singleElement = false;  
+  }
   context.putImageData(snapshot,0,0);
   context.lineCap = 'round';
 
@@ -189,11 +194,6 @@ function draw(e) {
     context.lineTo(e.clientX, e.clientY);
     currentStroke.push({x: e.clientX, y: e.clientY});
     context.stroke();
-  }
-
-  if(singleElement){
-    snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
-    singleElement = false;  
   }
 }
 
