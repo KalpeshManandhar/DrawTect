@@ -3,9 +3,6 @@ import * as vscode from 'vscode';
 import { DT_EditorProvider } from './DrawTectEditor';
 import { DT_CodeActionsProvider } from './DrawTectCodeActions';
 
-import { Preprocessor } from './preprocessor';
-import { WHITEBOARD_FOLDER } from './defines';
-
 export function activate(context: vscode.ExtensionContext) {
 	
 

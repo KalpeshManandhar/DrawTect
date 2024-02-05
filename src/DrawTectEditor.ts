@@ -145,6 +145,13 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
     handleMessageFromWebview(document: vscode.TextDocument, event: any){
         switch (event.type){
             case "stroke-add":{
+                /*
+                    event.data = {
+                        points: [{x:.., y:..}..],
+                        color: #rrggbb,
+                        width: 
+                    }
+                */
                 this.docAddNewStroke(document, event.data);
                 break;
             }

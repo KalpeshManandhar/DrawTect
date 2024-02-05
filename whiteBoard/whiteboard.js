@@ -1,6 +1,6 @@
 // whiteboard.js
 
-//import { vscode } from "interface.js";
+import { vscode } from "interface.js";
 
 // detect user's colour mode
 function isDarkModePreferred() {
@@ -120,13 +120,17 @@ function startPosition(e) {
 function endPosition() {
   drawing = false;
 
-  strokesStack.push(currentStroke);
+  // strokesStack.push(currentStroke);
   console.log(currentStroke);
   //context.beginPath();
 
   vscode.postMessage({
     type: "stroke-add",
-    data: currentStroke
+    data: {
+      points: currentStroke,
+      color: tempColour,
+      width: tempWidth,
+    }
   });
   singleElement = false;
 //context.beginPath();
@@ -202,10 +206,10 @@ function draw(e) {
   }
 }
 
-  if(singleElement){
-    // snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
-    singleElement = false;  
-  }
+  // if(singleElement){
+  //   // snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
+  //   singleElement = false;  
+  // }
   
 function disableWhiteboard(){
   allowUndo = false;
@@ -214,9 +218,13 @@ function disableWhiteboard(){
   fun.classList.add("disabled");
 }
 
-function drawStroke(stroke){
+function drawStroke(stroke, color, width){
   if (stroke.length == 0) 
     return;
+
+  context.save();
+  context.strokeStyle = `${color}`;
+  context.lineWidth = width;
 
   context.beginPath();
 
@@ -226,6 +234,9 @@ function drawStroke(stroke){
   }
   context.stroke();
   context.closePath();
+
+  context.restore();
+
 }
 
 
@@ -240,7 +251,7 @@ function redrawAllStrokes(){
 
   clearBackground("white");
   for (let stroke of strokesStack){
-    drawStroke(stroke);
+    drawStroke(stroke.points, stroke.color, stroke.width);
   }
 }
 
