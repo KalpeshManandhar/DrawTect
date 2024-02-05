@@ -57,7 +57,8 @@ selectedTool = "pen",
 prevMousePosX , prevMousePosY, snapshot, singleElement = true;
 
 
-let strokes = [];
+let strokesStack = [];
+let redoStrokesStack = [];
 let currentStroke = [];
 
 let drawing = false;
@@ -116,7 +117,7 @@ function startPosition(e) {
 function endPosition() {
   drawing = false;
 
-  strokes.push(currentStroke);
+  strokesStack.push(currentStroke);
   console.log(currentStroke);
   //context.beginPath();
 
@@ -172,7 +173,7 @@ const drawCircle = (e) => {
 
 function draw(e) {
   if (!drawing) return;
-  context.putImageData(snapshot,0,0);
+  // context.putImageData(snapshot,0,0);
   context.lineCap = 'round';
 
   if(selectedTool === "rectangle"){
@@ -192,21 +193,47 @@ function draw(e) {
   }
 
   if(singleElement){
-    snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
+    // snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
     singleElement = false;  
   }
 }
 
+function drawStroke(stroke){
+  if (stroke.length == 0) 
+    return;
 
-// update webview from file: draw the strokes 
-function updateFromFile(strokesArr){
-  for (let stroke of strokesArr){
-    context.moveTo(stroke[0].x, stroke[0].y);
-    for (let point of stroke){
-      context.lineTo(point.x, point.y);
-      context.stroke();
-    }
+  context.beginPath();
+
+  context.moveTo(stroke[0].x, stroke[0].y);
+  for (let point of stroke){
+    context.lineTo(point.x, point.y);
   }
+  context.stroke();
+  context.closePath();
+}
+
+
+function clearBackground(color){
+  context.fillStyle = `${color}`;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+
+function redrawAllStrokes(){
+  console.log(`redraw all ${strokesStack.length} strokes`)
+
+  clearBackground("white");
+  for (let stroke of strokesStack){
+    drawStroke(stroke);
+  }
+}
+
+
+
+// update webview from file: draw the strokes
+async function updateFromFile(strokesArr){
+  strokesStack = await Promise.all(strokesArr.map(a => a));
+  redrawAllStrokes();
 }
 
 
@@ -219,9 +246,12 @@ window.addEventListener('message', e => {
 
   switch (message.type){
     case 'update':{
-      console.log("data from ext");
-      console.log(message.data);
+      console.log(message);
+
       updateFromFile(message.data.strokes);
+
+      vscode.setState(message.data);
+
       break;
     }
   }
@@ -235,9 +265,29 @@ window.addEventListener('message', e => {
 document.addEventListener('keydown', function(event) {
 
   if(event.ctrlKey && event.key === 'z' ){
-    if(!snapshotStack.isEmpty()){
+    console.log("Undo")
+    if(false && !(strokesStack.length == 0)){
+
       snapshot = snapshotStack.pop();
-      context.putImageData(snapshot,0,0);
+      // context.putImageData(snapshot,0,0);
+      
+      const lastStroke = strokesStack.pop();
+      redoStrokesStack.push(lastStroke);
+      redrawAllStrokes();
+    }
+  }
+  
+  else if(event.ctrlKey && event.key === 'y' ){
+    if(!(redoStrokesStack.length == 0)){
+      console.log("Redo")
+
+
+      snapshot = snapshotStack.pop();
+      // context.putImageData(snapshot,0,0);
+      
+      const lastUndidStroke = redoStrokesStack.pop();
+      strokesStack.push(lastUndidStroke);
+      drawStroke(lastUndidStroke);
     }
   }
 });
@@ -286,3 +336,9 @@ savebtn.addEventListener("click", ()=>{
 canvas.addEventListener('mousedown', startPosition);
 canvas.addEventListener('mouseup', endPosition);
 canvas.addEventListener('mousemove', draw);
+
+
+const state = vscode.getState();
+if (state) {
+  updateFromFile(state.strokes);
+}

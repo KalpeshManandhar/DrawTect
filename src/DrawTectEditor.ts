@@ -88,12 +88,12 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
             `${this.context.extensionPath}/${PREPROCESSOR_EXPORT_FOLDER}/whiteboard.html`
         );
         
-        
         vscode.workspace.onDidChangeTextDocument(e => {
             // if the document with the changes is the same as this document
             if (e.document.uri.toString() === document.uri.toString()){
                 // update webview 
                 const docInfo = this.getDocumentAsJson(document);
+                console.log(docInfo);
 
                 this.sendMessageToWebview(webviewPanel.webview, "update", docInfo);
             }
@@ -152,12 +152,34 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
                 console.log("Stroke removed");
                 break;
             }
+            case "stroke-undo":{
+                
+                console.log("Stroke undo");
+                break;
+            }
         }
     }
 
     docAddNewStroke(document: vscode.TextDocument, strokeData: any){
         const docContent = this.getDocumentAsJson(document);
         docContent.strokes.push(strokeData);
+
+        console.log(docContent);
+
+        const edit = new vscode.WorkspaceEdit();
+        edit.replace(
+            document.uri,
+            new vscode.Range(0, 0, document.lineCount, 0),
+            JSON.stringify(docContent)
+        );
+
+        vscode.workspace.applyEdit(edit);
+    }
+
+
+    docUndo(document: vscode.TextDocument){
+        const docContent = this.getDocumentAsJson(document);
+        docContent.pop();
 
         console.log(docContent);
 
