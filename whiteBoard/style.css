@@ -7,7 +7,8 @@ body {
 }
 
 #toolSelectionBox,
-#functions {
+#functions ,
+#initialOptions{
     position: absolute;
     top: 10px;
     left: 10px;
@@ -23,7 +24,8 @@ body {
 #penOptions.disabled,
 #toolSelectionBox.disabled,
 #functions.disabled,
-#whiteboard.disabled{
+#whiteboard.disabled,
+#initialOptions.disabled{
   pointer-events: none;
   opacity: 0;
 }
@@ -102,7 +104,7 @@ body {
   align-content: center;
   background: inherit;
   border-radius: inherit;
-  border: 2px solid white;
+  border: 2px solid purple;
   transform: translate(-50%, -50%);
   cursor: pointer;
 }
@@ -122,7 +124,8 @@ body {
   border: 1px solid #ccc ;
 }
 
-#functions .option{
+#functions .option,
+#initialOptions .option{
 	text-align: center;
 	position: relative;
 	height: 40px;
@@ -165,12 +168,14 @@ body {
 #toolSelectionBox.dark-mode,
 #functions.dark-mode,
 #penOptions.dark-mode,
-#functions .option.dark-mode{
+#functions .option.dark-mode,
+#initialOptions.dark-mode{
   background-color: #1b1b1b;
   color: #f8eafc;
 }
 
-#functions .option.dark-mode:hover{
+#functions .option.dark-mode:hover,
+#initialOptions.dark-mode:hover{
   background: #f8eafc;
   color: #1b1b1b;
   cursor: pointer;

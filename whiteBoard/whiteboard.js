@@ -11,12 +11,14 @@ function toggleColorScheme() {
   const toolbox = document.getElementById('toolSelectionBox'),
   penbox = document.getElementById('penOptions'),
   functionBox = document.getElementById('functions'),
+  enableEdit = document.getElementById('initialOptions'),
   functionOptions = document.querySelectorAll(".btn");
 
   if (isDarkModePreferred()) {
       toolbox.classList.add('dark-mode');
       penbox.classList.add('dark-mode');
       functionBox.classList.add('dark-mode');
+      enableEdit.classList.add('dark-mode');
       functionOptions.forEach(btn => {
         btn.classList.add('dark-mode');
       });
@@ -24,7 +26,7 @@ function toggleColorScheme() {
     toolbox.classList.remove('dark-mode');
     penbox.classList.remove('dark-mode');
     functionBox.classList.remove('dark-mode');
-    
+    enableEdit.classList.remove('dark-mode');
     functionOptions.forEach(btn => {
       btn.classList.remove('dark-mode');
     });
@@ -46,7 +48,8 @@ fun = document.getElementById('functions'),
 fillColor = document.querySelector("#fill"),
 storebtn = document.querySelector(".saveImage"),
 clearbtn = document.querySelector(".clearCanvas"),
-toolButtons = document.querySelectorAll(".tool");
+toolButtons = document.querySelectorAll(".tool"),
+enableEdit = document.getElementById('initialOptions');
 
 
 // Set up canvas size
@@ -216,6 +219,7 @@ function disableWhiteboard(){
   penOptions.classList.add("disabled");
   tools.classList.add("disabled");
   fun.classList.add("disabled");
+  enableEdit.classList.remove("disabled");
 }
 
 function drawStroke(stroke, color, width){
@@ -353,6 +357,16 @@ toolButtons.forEach(btn =>{
     });
 });
 
+enableEdit.addEventListener("click",() =>{
+  enableEdit.classList.add("disabled");
+  canvas.style.pointerEvents = 'auto';
+  canvas.classList.remove("disabled");
+  penOptions.classList.remove("disabled");
+  tools.classList.remove("disabled");
+  fun.classList.remove("disabled");
+  allowUndo = true;
+});
+
 colourButtons.forEach(btn=> {
   btn.addEventListener("click", () => {
     console.log(btn.id);
@@ -388,7 +402,7 @@ canvas.addEventListener('mousedown', startPosition);
 canvas.addEventListener('mouseup', endPosition);
 canvas.addEventListener('mousemove', draw);
 
-
+canvas.style.pointerEvents = 'none';
 const state = vscode.getState();
 if (state) {
   updateFromFile(state.strokes);
