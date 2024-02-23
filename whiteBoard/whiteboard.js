@@ -1,6 +1,7 @@
 // whiteboard.js
 
 import { vscode } from "interface.js";
+import { cubicBezierSplineFit } from "./spline.js";
 
 // detect user's colour mode
 function isDarkModePreferred() {
@@ -123,6 +124,9 @@ function endPosition() {
   // strokesStack.push(currentStroke);
   console.log(currentStroke);
   //context.beginPath();
+  
+  
+
 
   vscode.postMessage({
     type: "stroke-add",
@@ -233,8 +237,6 @@ function drawStroke(stroke, color, width){
     context.lineTo(point.x, point.y);
   }
   context.stroke();
-  context.closePath();
-
   context.restore();
 
 }
@@ -252,7 +254,28 @@ function redrawAllStrokes(){
   clearBackground("white");
   for (let stroke of strokesStack){
     drawStroke(stroke.points, stroke.color, stroke.width);
+    let n = stroke.points.length;
+    console.log(stroke);
+    const val = cubicBezierSplineFit(stroke.points);
+    drawCubicBezier(val);
   }
+
+  
+}
+
+function drawCubicBezier(points){
+  context.beginPath();
+  context.strokeStyle = "red";
+  context.moveTo(points[0].x, points[0].y);
+
+  context.bezierCurveTo(
+    points[1].x, points[1].y, 
+    points[2].x, points[2].y, 
+    points[3].x, points[3].y, 
+  );
+
+  context.stroke();
+  context.closePath();
 }
 
 

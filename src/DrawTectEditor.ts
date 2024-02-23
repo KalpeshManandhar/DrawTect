@@ -75,6 +75,10 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
 
         webviewPanel.webview.options = {
             enableScripts: true,
+            // localResourceRoots: [
+            //     vscode.Uri.file(`${this.context.extensionPath}/whiteboard`),
+            //     vscode.Uri.file(`${this.context.extensionPath}/node_modules`)
+            // ],
         };
         
         
@@ -86,6 +90,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         
         webviewPanel.webview.html = this.getFileContent(
             `${this.context.extensionPath}/${PREPROCESSOR_EXPORT_FOLDER}/whiteboard.html`
+            // `${this.context.extensionPath}/whiteboard/whiteboard.html`
         );
         
         vscode.workspace.onDidChangeTextDocument(e => {
