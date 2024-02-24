@@ -47,6 +47,7 @@ penOptions = document.getElementById('penOptions'),
 tools = document.getElementById('toolSelectionBox'),
 fun = document.getElementById('functions'),
 fillColor = document.querySelector("#fill"),
+smoothen = document.querySelector('#smooth'),
 storebtn = document.querySelector(".saveImage"),
 clearbtn = document.querySelector(".clearCanvas"),
 toolButtons = document.querySelectorAll(".tool"),
@@ -257,11 +258,18 @@ function redrawAllStrokes(){
 
   clearBackground("white");
   for (let stroke of strokesStack){
-    drawStroke(stroke.points, stroke.color, stroke.width);
+    
     let n = stroke.points.length;
     console.log(stroke);
-    const val = cubicBezierSplineFit(stroke.points);
-    drawCubicBezierSpline(val, stroke.color, stroke.width);
+    
+    if(!smoothen.checked)
+    {
+      drawStroke(stroke.points, stroke.color, stroke.width);
+    }
+    else{
+      const val = cubicBezierSplineFit(stroke.points);
+      drawCubicBezierSpline(val, stroke.color, stroke.width);
+    }
   }
 
   
@@ -424,10 +432,6 @@ clearbtn.addEventListener("click", () =>{
 });
 
 storebtn.addEventListener("click", ()=>{
-  // const link = document.createElement("a");
-  // link.download = `${Date.now()}.jpg`;
-  // link.href = canvas.toDataURL();
-  // link.click();
   disableWhiteboard();
   canvas.style.pointerEvents = 'none';
 });

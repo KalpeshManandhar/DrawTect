@@ -48,15 +48,32 @@ body {
   padding: 1px; 
 }
 
-#fill {
-  position: relative;
-  margin-top: 7px;
-  cursor: pointer;
-  height: 18px;
-  width: 18px;
+.checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position:relative;
+  width: 14px; 
+  height: 14px; 
+  border-radius: 50%; 
+  border: 1px solid #ccc; 
+  outline: none; 
+  cursor: pointer; 
 }
-#fill:checked ~ label{
-  color: #4a98f7;
+
+.checkbox:checked {
+  background-color: #f8eafc; /* Change background color when checked */
+}
+
+/* Hide the default checkbox */
+.checkbox + label {
+  display: inline-block;
+  border: #ccc;
+  width: 14px; 
+  height: 14px; 
+  background-color: transparent;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .chooseColours,
