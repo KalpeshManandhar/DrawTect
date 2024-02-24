@@ -62,6 +62,11 @@ def preprocess_image(image_path):
     return img_array_flat
 
 # Example usage:
-image_path = "test.png"  # Replace with the path to your image file
-result_array = preprocess_image(image_path)
-print(result_array)
+# image_path = "test.png"  # Replace with the path to your image file
+# result_array = preprocess_image(image_path)
+# print(result_array)
+
+import tensorflow as tf
+
+print("TensorFlow version:", tf.__version__)
+
