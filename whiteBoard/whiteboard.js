@@ -1,5 +1,6 @@
 // whiteboard.js
 
+import { Camera2D } from "./camera.js";
 import { vscode } from "./interface.js";
 import { cubicBezierSplineFit } from "./spline.js";
 
@@ -52,6 +53,15 @@ clearbtn = document.querySelector(".clearCanvas"),
 toolButtons = document.querySelectorAll(".tool"),
 enableEdit = document.getElementById('initialOptions');
 
+const stateBools = {
+  "panning": false,
+  "space": false,
+  "smoothing": true,
+  "show_control_points": true
+};
+
+
+
 
 // Set up canvas size
 canvas.width = window.innerWidth;
@@ -63,12 +73,16 @@ tempColour = 'black',
 selectedTool = "pen",allowUndo = true,
 prevMousePosX , prevMousePosY, snapshot, singleElement = true;
 
+let prevCursorPos = {x:0, y:0}; 
 
 let strokesStack = [];
 let redoStrokesStack = [];
 let currentStroke = [];
 
 let drawing = false;
+
+let camera = new Camera2D(canvas.width, canvas.height, {x:0,y:0})
+
 
 class Stack{
   constructor(){
@@ -106,9 +120,16 @@ class Stack{
 const snapshotStack = new Stack();
 
 function startPosition(e) {
+  if (stateBools.space){
+    stateBools.panning = true;
+    return;
+  }
+
+
+
   console.log("start");
   currentStroke = [];
-  currentStroke.push({x: e.clientX, y: e.clientY});
+  currentStroke.push({x: e.clientX + camera.pos.x, y: e.clientY + camera.pos.y});
 
   drawing = true;
   singleElement = true;
@@ -118,23 +139,24 @@ function startPosition(e) {
   context.lineWidth = tempWidth;
   context.strokeStyle = tempColour;
   context.fillStyle = tempColour;
-  snapshot = context.getImageData(0, 0, canvas.width, canvas.height);
+  // snapshot = context.getImageData(0, 0, canvas.width, canvas.height);
 }
 
 function endPosition() {
+  if (stateBools.panning)
+    stateBools.panning = false;
+
+  if (!drawing) return;
+
   drawing = false;
 
-  // strokesStack.push(currentStroke);
-  console.log(currentStroke);
-  //context.beginPath();
-  
-  
-
-
+  const stroke = (stateBools.smoothing)? cubicBezierSplineFit(currentStroke) : currentStroke;
+  const type = (stateBools.smoothing)?"sp":"s";
   vscode.postMessage({
     type: "stroke-add",
     data: {
-      points: currentStroke,
+      type: type,
+      points: stroke,
       color: tempColour,
       width: tempWidth,
     }
@@ -186,6 +208,15 @@ const drawCircle = (e) => {
 };
 
 function draw(e) {
+  if (stateBools.panning){
+    camera.pos.x -= e.clientX - prevCursorPos.x; 
+    camera.pos.y -= e.clientY - prevCursorPos.y; 
+    redrawAllStrokes();
+  }
+
+  prevCursorPos.x = e.clientX;
+  prevCursorPos.y = e.clientY;
+
   if (!drawing) return;
   // context.putImageData(snapshot,0,0);
   
@@ -193,7 +224,7 @@ function draw(e) {
   //   snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
   //   singleElement = false;  
   // }
-  context.putImageData(snapshot,0,0);
+  // context.putImageData(snapshot,0,0);
   context.lineCap = 'round';
 
   if(selectedTool === "rectangle"){
@@ -208,7 +239,7 @@ function draw(e) {
   else{
     context.strokeStyle = selectedTool === "eraser" ? '#fff':tempColour;
     context.lineTo(e.clientX, e.clientY);
-    currentStroke.push({x: e.clientX, y: e.clientY});
+    currentStroke.push({x: e.clientX + camera.pos.x, y: e.clientY + camera.pos.y});
     context.stroke();
   }
 }
@@ -237,6 +268,7 @@ function drawStroke(stroke, color, width){
   context.beginPath();
 
   context.moveTo(stroke[0].x, stroke[0].y);
+
   for (let point of stroke){
     context.lineTo(point.x, point.y);
   }
@@ -257,11 +289,22 @@ function redrawAllStrokes(){
 
   clearBackground("white");
   for (let stroke of strokesStack){
-    drawStroke(stroke.points, stroke.color, stroke.width);
-    let n = stroke.points.length;
-    console.log(stroke);
-    const val = cubicBezierSplineFit(stroke.points);
-    drawCubicBezierSpline(val, stroke.color, stroke.width);
+    const strokeScreenSpace = stroke.points.map(p => {
+      return camera.toScreenSpace(p);
+    })
+
+    switch (stroke.type){
+
+      case "sp":{
+        drawCubicBezierSpline(strokeScreenSpace, stroke.color, stroke.width);
+        if (stateBools.show_control_points) 
+          drawStroke(strokeScreenSpace, "red", 1);
+        break;
+      }
+      default: {
+        drawStroke(strokeScreenSpace, stroke.color, stroke.width);
+      }
+    }
   }
 
   
@@ -281,6 +324,7 @@ function drawCubicBezier(points, color, width){
   context.beginPath();
   context.lineWidth = width;
   context.strokeStyle = `${color}`;
+
   context.moveTo(points[0].x, points[0].y);
 
   context.bezierCurveTo(
@@ -376,6 +420,18 @@ document.addEventListener('keydown', function(event){
   if(event.key === 's'){
     disableWhiteboard();
     canvas.style.pointerEvents = 'none';
+  }
+  // if space pressed 
+  if (event.key == ' '){
+    stateBools.panning = true;
+  }
+});
+
+document.addEventListener('keyup', function(event){
+  // if space pressed 
+  if (event.key == ' '){
+    stateBools.space = false;
+    stateBools.panning = false;
   }
 });
 
