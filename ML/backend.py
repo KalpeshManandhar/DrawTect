@@ -1,11 +1,15 @@
 from flask import Flask, request, jsonify
+import cv2
 from PIL import Image
+from tensorflow.keras.models import load_model
 import pickle
 import numpy as np
-
+import pandas as pd
 
 app = Flask(__name__)
 
+model=load_model('letterCNN.h5')
+labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 @app.route('/predict_digit', methods=['POST'])
 def predict_digit():    
@@ -22,12 +26,13 @@ def predict_digit():
     #         # Return the array as a JSON response
     # return jsonify({'image_array': img_array})
     
-    img_array = image_to_array(file)
+    # img_array = image_to_array(file)
     
-    predicted_digit = predict_digit_from_image(img_array)
-    print(predicted_digit)
-    return predicted_digit
-    
+    # predicted_digit = predict_digit_from_image(img_array)
+    # print(predicted_digit)
+    # return predicted_digit
+
+
    
 def image_to_array(image_file):    
     # Open the image file
@@ -79,5 +84,28 @@ def reverse_text():
     reversed_text = text[::-1]
     return jsonify({'reversed_text': reversed_text})
 
+@app.route('/predict', methods=['POST'])
+def predict():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+    file = request.files['file']
+    # Check if the file is empty
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
+
+    # Read the image using OpenCV
+    img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_COLOR)
+    # Resize the image
+    img = cv2.resize(img, dsize=(28, 28))
+    # Convert the image to grayscale
+    x = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # Reshape the image array
+    x = x.reshape((-1, 28, 28, 1))
+    # Perform prediction (assuming `model` and `labels` are defined elsewhere)
+    y = model.predict(x).squeeze()
+    pred_idx = np.argmax(y)
+    pred_char = labels[pred_idx]
+    predictions = pred_char
+    return jsonify({'image': predictions})
 if __name__ == '__main__':
     app.run(debug=True) 
