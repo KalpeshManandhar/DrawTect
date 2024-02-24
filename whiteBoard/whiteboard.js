@@ -57,7 +57,7 @@ enableEdit = document.getElementById('initialOptions');
 const stateBools = {
   "panning": false,
   "space": false,
-  "smoothing": true,
+  "smoothing": false,
   "show_control_points": true
 };
 
@@ -126,6 +126,13 @@ function startPosition(e) {
     return;
   }
 
+
+  if(smoothen.checked){
+    stateBools.smoothing = true;
+  }
+  else{
+    stateBools.smoothing = false;
+  }
 
 
   console.log("start");
@@ -352,7 +359,7 @@ async function updateFromFile(strokesArr){
 // messages from extension to webview
 window.addEventListener('message', e => {
   const message = e.data;
-  console.log("received messgae from ext")
+  console.log("received messgae from exit")
 
   switch (message.type){
     case 'update':{
