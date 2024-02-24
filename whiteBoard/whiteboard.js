@@ -217,9 +217,24 @@ const drawCircle = (e) => {
   context.beginPath();
 };
 
-function lineStroke(endX, endY){
-  context.lineTo(endX, endY);
+function lerp(a,b,t){
+	return a + (b-a) * t;
 }
+
+
+export function bezierTest(points, t){
+	const a = {x: lerp(points[0].x, points[1].x, t), y: lerp(points[0].y, points[1].y, t)};
+	const b = {x: lerp(points[1].x, points[2].x, t), y: lerp(points[1].y, points[2].y, t)};
+	const c = {x: lerp(points[2].x, points[3].x, t), y: lerp(points[2].y, points[3].y, t)};
+
+	const d = {x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t)};
+	const e = {x: lerp(b.x, c.x, t), y: lerp(b.y, c.y, t)};
+
+	const f = {x: lerp(d.x, e.x, t), y: lerp(d.y, e.y, t)};
+
+	return f;
+}
+
 
 function draw(e) {
   if (stateBools.panning){
@@ -246,17 +261,18 @@ function draw(e) {
    let tempX = e.clientX;
    let tempY = e.clientY;
 
-   
-   context.moveTo(prevMousePosX, prevMousePosY);
+   context.fillStyle = 'rgba(255, 255, 255, 4.5)'; 
+   context.fillRect(prevMousePosX, prevMousePosY, tempX - prevMousePosX, tempY - prevMousePosY);
 
-   
    context.beginPath();
+   context.moveTo(prevMousePosX, prevMousePosY);
+   
    context.lineTo(tempX, prevMousePosY);
    context.lineTo(tempX, tempY);
    context.lineTo(prevMousePosX, tempY);
    context.lineTo(prevMousePosX,prevMousePosY);
    context.closePath();
-   context.stroke();
+   
    
    currentStroke = [
     { x: prevMousePosX, y: prevMousePosY },
@@ -265,15 +281,114 @@ function draw(e) {
     { x: prevMousePosX, y: tempY },
     {x: prevMousePosX, y: prevMousePosY }
   ];
-   
+  context.stroke();
   }
 
   else if(selectedTool === "diamond"){
-    drawDiamond(e);
+    //drawDiamond(e);
+
+    let tempX = e.clientX;
+    let tempY = e.clientY;
+ 
+    context.fillStyle = 'rgba(255, 255, 255, 4.5)'; 
+    context.fillRect(prevMousePosX , prevMousePosY, tempX - prevMousePosX, tempY - prevMousePosY);
+ 
+    context.beginPath();
+    context.moveTo(prevMousePosX + (( tempX - prevMousePosX )/2), prevMousePosY);
+    
+    context.lineTo(tempX, prevMousePosY + ((tempY - prevMousePosY)/2));
+    context.lineTo(tempX - ((tempX - prevMousePosX)/2), tempY);
+    context.lineTo(prevMousePosX,(prevMousePosY + tempY)/2);
+    context.lineTo(prevMousePosX + (( tempX - prevMousePosX )/2), prevMousePosY);
+    context.closePath();
+    
+    
+    currentStroke = [
+     { x: prevMousePosX + (( tempX - prevMousePosX )/2), y: prevMousePosY },
+     { x: tempX, y: prevMousePosY + ((tempY - prevMousePosY)/2)},
+     { x: tempX - ((tempX - prevMousePosX)/2), y: tempY },
+     { x: prevMousePosX, y: (prevMousePosY + tempY)/2 },
+     {x: prevMousePosX + (( tempX - prevMousePosX )/2), y: prevMousePosY }
+   ];
+   context.stroke();
   }
+
   else if(selectedTool === "circle"){
-    drawCircle(e);
-  }
+    //drawCircle(e);
+  
+    let tempX = e.clientX;
+    let tempY = e.clientY;
+
+    let centerX = prevMousePosX + ((tempX - prevMousePosX)/2);
+    let centerY = prevMousePosY + ((tempY - prevMousePosY)/2);
+
+    let radius = (tempX - prevMousePosX)/2;
+    //   const c = 0.551915024494; // Magic number for circle approximation
+  
+    //   const cRadius = radius * c; // Control point distance
+  
+    //   const points = [
+    //       { x: centerX + radius, y: centerY },    
+    //       { x: centerX + radius, y: centerY + cRadius }, 
+    //       { x: centerX + cRadius, y: centerY + radius }, 
+    //       { x: centerX, y: centerY + radius },   
+    //       { x: centerX - cRadius, y: centerY + radius }, 
+    //       { x: centerX - radius, y: centerY + cRadius }, 
+    //       { x: centerX - radius, y: centerY },    
+    //       { x: centerX - radius, y: centerY - cRadius },
+    //       { x: centerX - cRadius, y: centerY - radius }, 
+    //       { x: centerX, y: centerY - radius },
+    //       { x: centerX + cRadius, y: centerY - radius },
+    //       { x: centerX + radius, y: centerY - cRadius }  
+    //   ];
+  
+    //   context.beginPath();    
+  
+    //   context.moveTo(points[0].x, points[0].y);
+  
+    //   context.bezierCurveTo(points[1].x, points[1].y, points[2].x, points[2].y, points[3].x, points[3].y);
+    //   context.bezierCurveTo(points[4].x, points[4].y, points[5].x, points[5].y, points[6].x, points[6].y);
+    //   context.bezierCurveTo(points[7].x, points[7].y, points[8].x, points[8].y, points[9].x, points[9].y);
+    //   context.bezierCurveTo(points[10].x, points[10].y, points[11].x, points[11].y, points[0].x, points[0].y);
+  
+    //   const numSamples = 300; // Number of samples
+    //   for (let i = 0; i <= numSamples; i++) {
+    //       const t = i / numSamples;
+    //       const f = bezierTest(points, t); // Calculate point on the curve
+    //       currentStroke.push({ x: f.x, y: f.y }); // Push point into currentStroke array
+    //   }
+    //   context.closePath();
+  
+    //   // Fill and stroke the circle
+    //   context.fillStyle = 'lightblue';
+    //   context.fill();
+    //   context.strokeStyle = 'black';
+    //   context.stroke();
+  
+    //   points.forEach(point => {
+    //     currentStroke.push({ x: point.x, y: point.y });
+    // });
+
+    let numPoints = 150;
+
+    const angleIncrement = (2 * Math.PI) / numPoints; 
+
+    context.beginPath();
+    for (let i = 0; i < numPoints; i++) {
+        const angle = i * angleIncrement; 
+        const x = centerX + radius * Math.cos(angle); 
+        const y = centerY + radius * Math.sin(angle); 
+        context.lineTo(x,y);
+        context.closePath;
+        currentStroke.push({x,y});
+    }
+    context.fillStyle = 'lightblue';
+    context.fill();
+    context.stroke();
+
+    }
+  
+
   else{
     context.strokeStyle = selectedTool === "eraser" ? '#fff':tempColour;
     context.lineTo(e.clientX, e.clientY);
