@@ -127,7 +127,7 @@ function startPosition(e) {
   }
 
 
-  if(smoothen.checked){
+  if(smoothen.checked && selectedTool == "pen"){
     stateBools.smoothing = true;
   }
   else{
@@ -141,8 +141,10 @@ function startPosition(e) {
 
   drawing = true;
   singleElement = true;
-  prevMousePosX = e.clientX - canvas.getBoundingClientRect().left;
-  prevMousePosY = e.clientY - canvas.getBoundingClientRect().top;
+  // prevMousePosX = e.clientX - canvas.getBoundingClientRect().left;
+  // prevMousePosY = e.clientY - canvas.getBoundingClientRect().top;
+  prevMousePosX = e.clientX;
+  prevMousePosY = e.clientY;
   context.beginPath();
   context.lineWidth = tempWidth;
   context.strokeStyle = tempColour;
@@ -215,6 +217,10 @@ const drawCircle = (e) => {
   context.beginPath();
 };
 
+function lineStroke(endX, endY){
+  context.lineTo(endX, endY);
+}
+
 function draw(e) {
   if (stateBools.panning){
     camera.pos.x -= e.clientX - prevCursorPos.x; 
@@ -236,8 +242,32 @@ function draw(e) {
   context.lineCap = 'round';
 
   if(selectedTool === "rectangle"){
-    drawRectangle(e);
+   // drawRectangle(e);
+   let tempX = e.clientX;
+   let tempY = e.clientY;
+
+   
+   context.moveTo(prevMousePosX, prevMousePosY);
+
+   
+   context.beginPath();
+   context.lineTo(tempX, prevMousePosY);
+   context.lineTo(tempX, tempY);
+   context.lineTo(prevMousePosX, tempY);
+   context.lineTo(prevMousePosX,prevMousePosY);
+   context.closePath();
+   context.stroke();
+   
+   currentStroke = [
+    { x: prevMousePosX, y: prevMousePosY },
+    { x: tempX, y: prevMousePosY },
+    { x: tempX, y: tempY },
+    { x: prevMousePosX, y: tempY },
+    {x: prevMousePosX, y: prevMousePosY }
+  ];
+   
   }
+
   else if(selectedTool === "diamond"){
     drawDiamond(e);
   }
