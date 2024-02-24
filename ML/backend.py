@@ -8,8 +8,7 @@ app = Flask(__name__)
 
 
 @app.route('/predict_digit', methods=['POST'])
-def predict_digit():
-    
+def predict_digit():    
     
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
@@ -18,30 +17,38 @@ def predict_digit():
     if file.filename == '':
         return jsonify({'error': 'No selected file'})
     
-    image = request.files['image']
-    img_array = image_to_array(file)
-            # Return the array as a JSON response
-    return jsonify({'image_array': img_array})
+    # image = request.files['image']
+    # img_array = image_to_array(file)
+    #         # Return the array as a JSON response
+    # return jsonify({'image_array': img_array})
     
-    predicted_digit = predict_digit_from_image(image)
+    img_array = image_to_array(file)
+    
+    predicted_digit = predict_digit_from_image(img_array)
     print(predicted_digit)
     return predicted_digit
     
    
-def image_to_array(image_file):
+def image_to_array(image_file):    
     # Open the image file
     img = Image.open(image_file)
+    
     # Convert the image to grayscale
     img = img.convert('L')
-    # Resize the image to a fixed size if needed
-    # img = img.resize((28, 28))
+    
+    # Resize the image to 28x28 pixels
+    img = img.resize((28, 28))
+    
     # Convert the image to a numpy array
     img_array = np.array(img)
-    # Normalize the pixel values to be between 0 and 1
-    img_array = img_array / 255.0
-    # Flatten the array
+    
+    # Flatten the array to 1D
     img_array_flat = img_array.flatten()
-    return img_array_flat.tolist()
+    
+    # Reshape the flattened array to have one column
+    img_array_flat = img_array_flat.reshape(-1, 1)/255
+    
+    return img_array_flat
 
 def makePredictions(X, W1 ,b1, W2, b2):
     dummy1,dummy2,dummy3, A2 = forwardPropagation(X, W1, b1, W2, b2)
@@ -57,12 +64,13 @@ def forwardPropagation(X,W1,b1,W2,b2):
     return Z1, A1, Z2, A2
 
 def predict_digit_from_image(image):
-    with open("trained_params.pkl", "rb") as dump_file:
-        W1, b1, W2, b2 = pickle.load(dump_file)
-
-	
-    predictions = makePredictions(image, W1, b1, W2, b2)
-    return predictions
+    with open("trained_params.pkl","rb") as dump_file:
+        W1, b1, W2, b2=pickle.load(dump_file, encoding='latin1')
+        
+    # testimg=image_to_array(image)
+    predictions = makePredictions(image, W1, b1, W2, b2).tolist()
+    print(predictions)
+    return jsonify({'image_array': predictions})
 
 @app.route('/reverse_text', methods=['POST'])
 def reverse_text():
