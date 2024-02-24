@@ -46,14 +46,16 @@ export class Preprocessor{
 			
 			// if is file
 			if (fs.lstatSync(absFilePath).isFile()){
-				const regex = /[\w\s-]*.(\w*)/;
-				let fileExtension = regex.exec(file);
+				const regex = /[\w*\s*.*]*.(\w*)/;
+				// let fileExtension = regex.exec(file);
+				let splitted = file.split('.');
+				let fileExtension = splitted[splitted.length - 1];
 				
 				if (!fileExtension){
 					continue;
 				}
 
-				switch(fileExtension[1]){
+				switch(fileExtension){
 					case "html":{
 						this.preprocessAndExportHTML(
 							relDirPath, file  
@@ -75,6 +77,11 @@ export class Preprocessor{
 						console.log(`CSS File: ${file}`);
 						break;
 					}
+					default :{
+						const src = `${absDirPath}/${file}`;
+						const dest = `${absDirPathDest}/${file}`;
+						fs.copyFileSync(src, dest);
+					}
 				}
 			}
 		}
@@ -82,17 +89,17 @@ export class Preprocessor{
 		
 
 	private preprocessAndExportHTML(baseDir: string, htmlFile: string){
-		const regex = /["']([\w*\\*/*.*\s*]*.(?:css|js|png|svg|jpeg|jpg))["']/g;
+		const regex = /["']\/?([\w*\\*/*.*\s*]*.(?:css|js|png|svg|jpeg|jpg))["']/g;
 		this.preprocessPathAndExport(baseDir, htmlFile, regex);
 	}
 	
 	private preprocessAndExportJS(baseDir: string, jsFile: string){
-		const regex = /["']([\w*\\*/*.*\s*]*.(?:css|js|png|svg|jpeg|jpg))["']/g;
+		const regex = /["']\/?([\w*\\*/*.*\s*]*.(?:css|js|png|svg|jpeg|jpg))["']/g;
 		this.preprocessPathAndExport(baseDir, jsFile, regex);
 	}
 	
 	private preprocessAndExportCSS(baseDir: string, cssFile: string){
-		const regex = /["']([\w*\\*/*.*\s*]*.(?:png|svg|jpeg|jpg))["']/g;
+		const regex = /["']\/?([\w*\\*/*.*\s*]*.(?:png|svg|jpeg|jpg))["']/g;
 		this.preprocessPathAndExport(baseDir, cssFile, regex);
 	}
 

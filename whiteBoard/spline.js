@@ -1,5 +1,3 @@
-// import { math } from "mathjs";
-
 function magnitude(v){
 	return Math.sqrt(v.x * v.x + v.y * v.y);
 }
@@ -262,12 +260,12 @@ function cubicBezierFitv1(points){
 	// console.log("t")
 	// console.log(tValues);
 
-	// const a = [2,2,3,-2];
-	// const c = [4,1];
+	const a = [2,2,3,-2];
+	const c = [4,1];
 
-	// const sol = solveSystem2(a, c);
-	// console.log("sol");
-	// console.log(sol);
+	const sol = lusolve(a, c);
+	console.log("sol");
+	console.log(sol);
 	
 	
 	
@@ -346,8 +344,20 @@ function cubicBezierFitv1(points){
 export function cubicBezierSplineFit(rawPoints){
 	// console.log(rawPoints);
 	const points = prunePoints(rawPoints);
+	const PER_SEGMENT_POINTS = 15;
+	const nSegments = Math.ceil(points.length/PER_SEGMENT_POINTS);
+	
+	let result = [points[0]];
+	for (let i =0; i< nSegments; i++){
+		const segmentStart = i*PER_SEGMENT_POINTS;
+		const segmentEnd = segmentStart + Math.min(PER_SEGMENT_POINTS, points.length - segmentStart);
+		
+		const segmentFit = cubicBezierFitv2(points.slice(segmentStart, segmentEnd));
+		
+		result.push(segmentFit[1]);
+		result.push(segmentFit[2]);
+		result.push(segmentFit[3]);
+	}
 
-	return cubicBezierFitv2(points);
-	
-	
+	return result;
 }

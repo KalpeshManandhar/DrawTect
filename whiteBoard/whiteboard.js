@@ -1,6 +1,6 @@
 // whiteboard.js
 
-import { vscode } from "interface.js";
+import { vscode } from "./interface.js";
 import { cubicBezierSplineFit } from "./spline.js";
 
 // detect user's colour mode
@@ -261,15 +261,26 @@ function redrawAllStrokes(){
     let n = stroke.points.length;
     console.log(stroke);
     const val = cubicBezierSplineFit(stroke.points);
-    drawCubicBezier(val);
+    drawCubicBezierSpline(val, stroke.color, stroke.width);
   }
 
   
 }
 
-function drawCubicBezier(points){
+
+function drawCubicBezierSpline(points, color, width){
+  const nSegments = (points.length-1)/3;
+
+  for (let i = 0; i<nSegments; i++){
+    drawCubicBezier(points.slice(i*3, i*3+4), color, width);
+  }
+}
+
+
+function drawCubicBezier(points, color, width){
   context.beginPath();
-  context.strokeStyle = "red";
+  context.lineWidth = width;
+  context.strokeStyle = `${color}`;
   context.moveTo(points[0].x, points[0].y);
 
   context.bezierCurveTo(
