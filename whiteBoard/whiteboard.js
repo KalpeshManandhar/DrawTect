@@ -1,6 +1,6 @@
 // whiteboard.js
 
-import { findBoundBox, insideRect, rectRectBoundingBox, rectRectOverlap } from "./bound.js";
+import { Rect, findBoundBox, insideRect, rectRectBoundingBox, rectRectOverlap } from "./bound.js";
 import { Camera2D } from "./camera.js";
 import { vscode } from "./interface.js";
 import { cubicBezierSplineFit } from "./spline.js";
@@ -306,7 +306,7 @@ function draw(e) {
 
 
   if (stateBools.selecting){
-    const selectBounds = [clickedAt, {x: e.clientX, y: e.clientY}];
+    const selectBounds = Rect(clickedAt, {x: e.clientX, y: e.clientY});
     const selectBoundsWS = [
       camera.toWorldSpace(selectBounds[0]), 
       camera.toWorldSpace(selectBounds[1])

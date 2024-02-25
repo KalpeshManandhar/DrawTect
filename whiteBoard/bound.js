@@ -16,6 +16,19 @@ export function findBoundBox(points){
 	return [min, max];
 }
 
+export function Rect(p1, p2){
+	const min = {
+		x: Math.min(p1.x, p2.x),
+		y: Math.min(p1.y, p2.y)
+	};
+	const max = {
+		x: Math.max(p1.x, p2.x),
+		y: Math.max(p1.y, p2.y)
+	};
+	return [min, max];
+
+}
+
 
 export function rectRectOverlap(a,b){
 	const overlapX = 	((a[0].x >= b[0].x) && (a[0].x <= b[1].x)) || 
