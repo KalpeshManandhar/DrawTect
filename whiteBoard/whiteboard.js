@@ -193,8 +193,8 @@ function endPosition() {
     }
 
     combinedBoundingBoxSS = [
-      camera.toScreenSpace(strokesStack[0].bounds[0]), 
-      camera.toScreenSpace(strokesStack[0].bounds[1])
+      camera.toScreenSpace(strokesStack[selectedStrokeIndices[0]].bounds[0]), 
+      camera.toScreenSpace(strokesStack[selectedStrokeIndices[0]].bounds[1])
     ];
 
     for (let selectedIndex of selectedStrokeIndices){
