@@ -304,13 +304,13 @@ function draw(e) {
     
     
     currentStroke = [
-     { x: prevMousePosX + (( tempX - prevMousePosX )/2), y: prevMousePosY },
-     { x: tempX, y: prevMousePosY + ((tempY - prevMousePosY)/2)},
-     { x: tempX - ((tempX - prevMousePosX)/2), y: tempY },
-     { x: prevMousePosX, y: (prevMousePosY + tempY)/2 },
-     {x: prevMousePosX + (( tempX - prevMousePosX )/2), y: prevMousePosY }
-   ];
-   context.stroke();
+      { x: prevMousePosX + (( tempX - prevMousePosX )/2), y: prevMousePosY },
+      { x: tempX, y: prevMousePosY + ((tempY - prevMousePosY)/2)},
+      { x: tempX - ((tempX - prevMousePosX)/2), y: tempY },
+      { x: prevMousePosX, y: (prevMousePosY + tempY)/2 },
+      { x: prevMousePosX + (( tempX - prevMousePosX )/2), y: prevMousePosY }
+    ];
+    context.stroke();
   }
 
   else if(selectedTool === "circle"){
