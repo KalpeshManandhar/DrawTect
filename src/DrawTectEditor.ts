@@ -32,13 +32,13 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
     public static async openFileCommand(relativePath: string){
         if (!relativePath){
             console.error("No file opened");
-            return;
+            return false;
         }
 
         const workspaces = vscode.workspace.workspaceFolders;
         if (!workspaces){
             console.error("No workspace opened");
-            return;
+            return false;
         }
 
         const baseUri = workspaces[0].uri;
@@ -46,7 +46,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
 
         if (!fs.existsSync(filePath)){
             console.error(`${filePath} doesn't seem to exist.`);
-            return;
+            return false;
         }
 
         await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(filePath));
@@ -55,6 +55,26 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         return true;
     }
 
+    // opens 
+    public static async DT_openFileCommand(filename: string){
+        const DIRS_TO_CHECK: Array<string> = [
+            "dt",
+            "docs",
+            "deeznuts"
+        ];
+
+        if (await DT_EditorProvider.openFileCommand(filename)){
+            return;
+        }
+
+        for (let dir of DIRS_TO_CHECK){
+            if (await DT_EditorProvider.openFileCommand(`${dir}/${filename}`)){
+                return;
+            }
+        }
+
+        vscode.window.showErrorMessage(`Can't find ${filename} in predefined folder`);
+    }
 
 
 
@@ -62,7 +82,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
 		const provider = new DT_EditorProvider(context);
 		const providerRegistration = vscode.window.registerCustomEditorProvider(DT_EditorProvider.viewType, provider);
         vscode.commands.registerCommand(EXTENSION_COMMANDS.test, this.testCommand);
-        vscode.commands.registerCommand(EXTENSION_COMMANDS.open, this.openFileCommand);
+        vscode.commands.registerCommand(EXTENSION_COMMANDS.open, this.DT_openFileCommand);
         
         return providerRegistration;
 	}

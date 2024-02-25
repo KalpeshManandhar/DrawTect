@@ -81,7 +81,7 @@ export class DT_CodeActionsProvider implements vscode.CodeActionProvider{
     resolveCodeAction(codeAction: vscode.CodeAction, token: vscode.CancellationToken): vscode.CodeAction{
         // codeAction.command = {
         //     title: "test",
-        //     command: EXTENSION_COMMANDS.test,
+        //     command: EXTENSION_COMMANDS.7,
         // };
         return codeAction;
     }
