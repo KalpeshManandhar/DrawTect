@@ -1,6 +1,6 @@
 // whiteboard.js
 
-import { findBoundBox } from "./bound.js";
+import { findBoundBox, insideRect, rectRectBoundingBox, rectRectOverlap } from "./bound.js";
 import { Camera2D } from "./camera.js";
 import { vscode } from "./interface.js";
 import { cubicBezierSplineFit } from "./spline.js";
@@ -58,9 +58,11 @@ enableEdit = document.getElementById('initialOptions');
 
 const stateBools = {
   "panning": false,
-  "space": false,
+  "spacebar": false,
   "smoothing": false,
-  "show_control_points": false
+  "show_control_points": false,
+  "selecting": false,
+  "moving": false,
 };
 
 
@@ -77,10 +79,19 @@ selectedTool = "pen",allowUndo = true,
 prevMousePosX , prevMousePosY, snapshot, singleElement = true;
 
 let prevCursorPos = {x:0, y:0}; 
+let clickedAt = {x:0, y:0};
+
+
 
 let strokesStack = [];
 let redoStrokesStack = [];
 let currentStroke = [];
+
+
+let selectedStrokeIndices = [];
+let combinedBoundingBoxSS = [];
+let isSelected = false;
+
 
 let drawing = false;
 
@@ -123,11 +134,23 @@ class Stack{
 const snapshotStack = new Stack();
 
 function startPosition(e) {
-  if (stateBools.space){
+  clickedAt = {x: e.clientX, y: e.clientY};
+
+  if (stateBools.spacebar){
     stateBools.panning = true;
     return;
   }
 
+  // the select tool
+  if (selectedTool == "select"){
+    // moving a selected bunch of strokes
+    if (isSelected && insideRect({x:e.clientX, y: e.clientY}, combinedBoundingBoxSS)){
+      stateBools.moving = true;
+      return;
+    }
+    stateBools.selecting = true;
+    return;
+  }
 
   if(smoothen.checked && selectedTool == "pen"){
     stateBools.smoothing = true;
@@ -135,7 +158,6 @@ function startPosition(e) {
   else{
     stateBools.smoothing = false;
   }
-
 
   console.log("start");
   currentStroke = [];
@@ -155,8 +177,38 @@ function startPosition(e) {
 }
 
 function endPosition() {
-  if (stateBools.panning)
+  if (stateBools.panning){
     stateBools.panning = false;
+    return;
+  }
+
+  if (stateBools.selecting){
+    stateBools.selecting = false;
+    
+    redrawAllStrokes();
+
+    if (selectedStrokeIndices.length == 0){
+      isSelected = false;
+      return;
+    }
+
+    combinedBoundingBoxSS = [
+      camera.toScreenSpace(strokesStack[0].bounds[0]), 
+      camera.toScreenSpace(strokesStack[0].bounds[1])
+    ];
+
+    for (let selectedIndex of selectedStrokeIndices){
+      const strokeBoundsSS = [
+        camera.toScreenSpace(strokesStack[selectedIndex].bounds[0]), 
+        camera.toScreenSpace(strokesStack[selectedIndex].bounds[1])
+      ];  
+      drawRect(strokeBoundsSS, "blue", 1);
+      
+      combinedBoundingBoxSS = rectRectBoundingBox(strokeBoundsSS, combinedBoundingBoxSS);  
+    }
+    drawRect(combinedBoundingBoxSS, "blue", 1);
+  }
+
 
   if (!drawing) return;
 
@@ -248,8 +300,37 @@ function draw(e) {
     redrawAllStrokes();
   }
 
+  
   prevCursorPos.x = e.clientX;
   prevCursorPos.y = e.clientY;
+
+
+  if (stateBools.selecting){
+    const selectBounds = [clickedAt, {x: e.clientX, y: e.clientY}];
+    const selectBoundsWS = [
+      camera.toWorldSpace(selectBounds[0]), 
+      camera.toWorldSpace(selectBounds[1])
+    ];
+
+    selectedStrokeIndices = [];
+    
+    redrawAllStrokes();
+    for (let strokeIndex in strokesStack){
+      if (rectRectOverlap(selectBoundsWS, strokesStack[strokeIndex].bounds)){
+        const bound = strokesStack[strokeIndex].bounds;
+        const strokeBoundsSS = [
+          camera.toScreenSpace(bound[0]), 
+          camera.toScreenSpace(bound[1])
+        ];  
+        drawRect(strokeBoundsSS, "blue", 1);
+        selectedStrokeIndices.push(strokeIndex);
+      } 
+    }
+
+    drawRect(selectBounds, "black", 1);
+    return;
+  }
+
 
   if (!drawing) return;
   // context.putImageData(snapshot,0,0);
@@ -261,6 +342,7 @@ function draw(e) {
   // context.putImageData(snapshot,0,0);
   context.lineCap = 'round';
 
+  
   if(selectedTool === "rectangle"){
    // drawRectangle(e);
    let tempX = e.clientX;
@@ -614,16 +696,16 @@ document.addEventListener('keydown', function(event){
     disableWhiteboard();
     canvas.style.pointerEvents = 'none';
   }
-  // if space pressed 
+  // if spacebar pressed 
   if (event.key == ' '){
     stateBools.panning = true;
   }
 });
 
 document.addEventListener('keyup', function(event){
-  // if space pressed 
+  // if spacebar pressed 
   if (event.key == ' '){
-    stateBools.space = false;
+    stateBools.spacebar = false;
     stateBools.panning = false;
   }
 });

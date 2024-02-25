@@ -17,4 +17,15 @@ export class Camera2D{
 		return res;
 
 	}
+	
+	toWorldSpace(point){
+		let res = {x: point.x, y: point.y};
+
+		// translate
+		res.x += this.pos.x;
+		res.y += this.pos.y;
+
+		return res;
+
+	}
 }

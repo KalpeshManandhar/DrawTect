@@ -15,3 +15,30 @@ export function findBoundBox(points){
 
 	return [min, max];
 }
+
+
+export function rectRectOverlap(a,b){
+	const overlapX = 	((a[0].x >= b[0].x) && (a[0].x <= b[1].x)) || 
+						((b[0].x >= a[0].x) && (b[0].x <= a[1].x));
+	const overlapY =   	((a[0].y >= b[0].y) && (a[0].y <= b[1].y)) ||  
+						((b[0].y >= a[0].y) && (b[0].y <= a[1].y));
+	return overlapX && overlapY;
+}
+
+export function rectRectBoundingBox(a,b){
+	const min = {
+		x: Math.min(a[0].x, b[0].x),
+		y: Math.min(a[0].y, b[0].y)
+	};
+	const max = {
+		x: Math.max(a[1].x, b[1].x),
+		y: Math.max(a[1].y, b[1].y)
+	};
+
+	return [min, max];
+}
+
+export function insideRect(pt, rect){
+	return 	(pt.x >= rect[0].x &&  pt.x <= rect[1].x) && 
+			(pt.y >= rect[0].y &&  pt.y <= rect[1].y);
+}
