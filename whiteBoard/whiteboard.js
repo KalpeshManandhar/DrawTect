@@ -1,5 +1,6 @@
 // whiteboard.js
 
+import { findBoundBox } from "./bound.js";
 import { Camera2D } from "./camera.js";
 import { vscode } from "./interface.js";
 import { cubicBezierSplineFit } from "./spline.js";
@@ -49,6 +50,7 @@ tools = document.getElementById('toolSelectionBox'),
 fun = document.getElementById('functions'),
 fillColor = document.querySelector("#fill"),
 smoothen = document.querySelector('#smooth'),
+debug = document.querySelector('#debuginfo'),
 storebtn = document.querySelector(".saveImage"),
 clearbtn = document.querySelector(".clearCanvas"),
 toolButtons = document.querySelectorAll(".tool"),
@@ -58,7 +60,7 @@ const stateBools = {
   "panning": false,
   "space": false,
   "smoothing": false,
-  "show_control_points": true
+  "show_control_points": false
 };
 
 
@@ -160,8 +162,11 @@ function endPosition() {
 
   drawing = false;
 
-  const stroke = (stateBools.smoothing)? cubicBezierSplineFit(currentStroke) : currentStroke;
+  const stroke = (stateBools.smoothing && currentStroke.length > 4)? 
+                  cubicBezierSplineFit(currentStroke) : currentStroke;
   const type = (stateBools.smoothing)?"sp":"s";
+  
+  
   vscode.postMessage({
     type: "stroke-add",
     data: {
@@ -436,6 +441,24 @@ function clearBackground(color){
   context.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+// rect is [min, max]
+function drawRect(rect, color, width=1){
+  context.save();
+  
+  context.strokeStyle = `${color}`;
+  context.lineWidth = width;
+
+  context.beginPath();
+  context.moveTo(rect[0].x, rect[0].y);
+  context.lineTo(rect[0].x, rect[1].y);
+  context.lineTo(rect[1].x, rect[1].y);
+  context.lineTo(rect[1].x, rect[0].y);
+  context.lineTo(rect[0].x, rect[0].y);
+  context.stroke();
+  context.closePath();
+
+  context.restore();
+}
 
 function redrawAllStrokes(){
   console.log(`redraw all ${strokesStack.length} strokes`)
@@ -450,13 +473,22 @@ function redrawAllStrokes(){
 
       case "sp":{
         drawCubicBezierSpline(strokeScreenSpace, stroke.color, stroke.width);
-        if (stateBools.show_control_points) 
+        if (debug.checked){
           drawStroke(strokeScreenSpace, "red", 1);
+        }
         break;
       }
       default: {
         drawStroke(strokeScreenSpace, stroke.color, stroke.width);
       }
+    }
+
+    if (debug.checked) {
+      const boundsScreenSpace = [
+        camera.toScreenSpace(stroke.bounds[0]),
+        camera.toScreenSpace(stroke.bounds[1])
+      ];
+      drawRect(boundsScreenSpace, "red", 1);
     }
   }
 
@@ -474,6 +506,8 @@ function drawCubicBezierSpline(points, color, width){
 
 
 function drawCubicBezier(points, color, width){
+  context.save();
+  
   context.beginPath();
   context.lineWidth = width;
   context.strokeStyle = `${color}`;
@@ -488,13 +522,19 @@ function drawCubicBezier(points, color, width){
 
   context.stroke();
   context.closePath();
+  context.restore();
 }
 
 
 
 // update webview from file: draw the strokes
 async function updateFromFile(strokesArr){
-  strokesStack = await Promise.all(strokesArr.map(a => a));
+  strokesStack = await Promise.all(strokesArr.map(a => {
+    return {
+      ...a,
+      bounds: findBoundBox(a.points) 
+    }
+  }));
   redrawAllStrokes();
 }
 
