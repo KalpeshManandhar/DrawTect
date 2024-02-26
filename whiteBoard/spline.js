@@ -344,14 +344,20 @@ function cubicBezierFitv1(points){
 export function cubicBezierSplineFit(rawPoints){
 	// console.log(rawPoints);
 	const points = prunePoints(rawPoints);
-	const PER_SEGMENT_POINTS = 15;
+	const PER_SEGMENT_POINTS = 20;
 	const nSegments = Math.ceil(points.length/PER_SEGMENT_POINTS);
+
 	
 	let result = [points[0]];
 	for (let i =0; i< nSegments; i++){
 		const segmentStart = i*PER_SEGMENT_POINTS;
-		const segmentEnd = segmentStart + Math.min(PER_SEGMENT_POINTS, points.length - segmentStart);
-		
+		let segmentEnd = segmentStart + Math.min(PER_SEGMENT_POINTS, points.length - segmentStart);
+
+		if ((points.length - segmentEnd) < 5){
+			segmentEnd = points.length;
+			i++;
+		}
+
 		const segmentFit = cubicBezierFitv2(points.slice(segmentStart, segmentEnd));
 		
 		result.push(segmentFit[1]);
