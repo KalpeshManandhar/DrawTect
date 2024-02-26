@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 import { DT_EditorProvider } from './DrawTectEditor';
 import { DT_CodeActionsProvider } from './DrawTectCodeActions';
-import { sendDataForHTR } from './HTRInterface';
+// import { sendDataForHTR } from './HTRInterface';
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -14,6 +14,6 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	console.log("Provider registered");
 
-	sendDataForHTR([]);
+	// sendDataForHTR([]);
 
 }

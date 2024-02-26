@@ -1,5 +1,6 @@
 // whiteboard.js
 
+import { Rect, findBoundBox, insideRect, rectRectBoundingBox, rectRectOverlap } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./bound.js";
 import { Camera2D } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./camera.js";
 import { vscode } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./interface.js";
 import { cubicBezierSplineFit } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./spline.js";
@@ -31,6 +32,7 @@ tools = document.getElementById('toolSelectionBox'),
 fun = document.getElementById('functions'),
 fillColor = document.querySelector("#fill"),
 smoothen = document.querySelector('#smooth'),
+debug = document.querySelector('#debuginfo'),
 storebtn = document.querySelector(".saveImage"),
 clearbtn = document.querySelector(".clearCanvas"),
 toolButtons = document.querySelectorAll(".tool"),
@@ -38,9 +40,11 @@ enableEdit = document.getElementById('initialOptions');
 
 const stateBools = {
   "panning": false,
-  "space": false,
+  "spacebar": false,
   "smoothing": false,
-  "show_control_points": true
+  "show_control_points": false,
+  "selecting": false,
+  "moving": false,
 };
 
 
@@ -57,10 +61,19 @@ selectedTool = "pen",allowUndo = true,
 prevMousePosX , prevMousePosY, snapshot, singleElement = true;
 
 let prevCursorPos = {x:0, y:0}; 
+let clickedAt = {x:0, y:0};
+
+
 
 let strokesStack = [];
 let redoStrokesStack = [];
 let currentStroke = [];
+
+
+let selectedStrokeIndices = [];
+let combinedBoundingBoxSS = [];
+let isSelected = false;
+
 
 let drawing = false;
 
@@ -103,11 +116,23 @@ class Stack{
 const snapshotStack = new Stack();
 
 function startPosition(e) {
-  if (stateBools.space){
+  clickedAt = {x: e.clientX, y: e.clientY};
+
+  if (stateBools.spacebar){
     stateBools.panning = true;
     return;
   }
 
+  // the select tool
+  if (selectedTool == "select"){
+    // moving a selected bunch of strokes
+    if (isSelected && insideRect({x:e.clientX, y: e.clientY}, combinedBoundingBoxSS)){
+      stateBools.moving = true;
+      return;
+    }
+    stateBools.selecting = true;
+    return;
+  }
 
   if(smoothen.checked && selectedTool == "pen"){
     stateBools.smoothing = true;
@@ -115,7 +140,6 @@ function startPosition(e) {
   else{
     stateBools.smoothing = false;
   }
-
 
   console.log("start");
   currentStroke = [];
@@ -135,15 +159,48 @@ function startPosition(e) {
 }
 
 function endPosition() {
-  if (stateBools.panning)
+  if (stateBools.panning){
     stateBools.panning = false;
+    return;
+  }
+
+  if (stateBools.selecting){
+    stateBools.selecting = false;
+    
+    redrawAllStrokes();
+
+    if (selectedStrokeIndices.length == 0){
+      isSelected = false;
+      return;
+    }
+
+    combinedBoundingBoxSS = [
+      camera.toScreenSpace(strokesStack[selectedStrokeIndices[0]].bounds[0]), 
+      camera.toScreenSpace(strokesStack[selectedStrokeIndices[0]].bounds[1])
+    ];
+
+    for (let selectedIndex of selectedStrokeIndices){
+      const strokeBoundsSS = [
+        camera.toScreenSpace(strokesStack[selectedIndex].bounds[0]), 
+        camera.toScreenSpace(strokesStack[selectedIndex].bounds[1])
+      ];  
+      drawRect(strokeBoundsSS, "blue", 1);
+      
+      combinedBoundingBoxSS = rectRectBoundingBox(strokeBoundsSS, combinedBoundingBoxSS);  
+    }
+    drawRect(combinedBoundingBoxSS, "blue", 1);
+  }
+
 
   if (!drawing) return;
 
   drawing = false;
 
-  const stroke = (stateBools.smoothing)? cubicBezierSplineFit(currentStroke) : currentStroke;
+  const stroke = (stateBools.smoothing && currentStroke.length > 4)? 
+                  cubicBezierSplineFit(currentStroke) : currentStroke;
   const type = (stateBools.smoothing)?"sp":"s";
+  
+  
   vscode.postMessage({
     type: "stroke-add",
     data: {
@@ -165,8 +222,37 @@ function draw(e) {
     redrawAllStrokes();
   }
 
+  
   prevCursorPos.x = e.clientX;
   prevCursorPos.y = e.clientY;
+
+
+  if (stateBools.selecting){
+    const selectBounds = Rect(clickedAt, {x: e.clientX, y: e.clientY});
+    const selectBoundsWS = [
+      camera.toWorldSpace(selectBounds[0]), 
+      camera.toWorldSpace(selectBounds[1])
+    ];
+
+    selectedStrokeIndices = [];
+    
+    redrawAllStrokes();
+    for (let strokeIndex in strokesStack){
+      if (rectRectOverlap(selectBoundsWS, strokesStack[strokeIndex].bounds)){
+        const bound = strokesStack[strokeIndex].bounds;
+        const strokeBoundsSS = [
+          camera.toScreenSpace(bound[0]), 
+          camera.toScreenSpace(bound[1])
+        ];  
+        drawRect(strokeBoundsSS, "blue", 1);
+        selectedStrokeIndices.push(strokeIndex);
+      } 
+    }
+
+    drawRect(selectBounds, "black", 1);
+    return;
+  }
+
 
   if (!drawing) return;
   //context.putImageData(snapshot,0,0);
@@ -177,6 +263,7 @@ function draw(e) {
   // }
   context.lineCap = 'round';
 
+  
   if(selectedTool === "rectangle"){
    //drawShape.drawRectangle(e,prevMousePosX, prevMousePosY, fillColor);
    currentStroke = drawShape.strokeRectangle(e, prevMousePosX, prevMousePosY);
@@ -310,6 +397,24 @@ function clearBackground(color){
   context.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+// rect is [min, max]
+function drawRect(rect, color, width=1){
+  context.save();
+  
+  context.strokeStyle = `${color}`;
+  context.lineWidth = width;
+
+  context.beginPath();
+  context.moveTo(rect[0].x, rect[0].y);
+  context.lineTo(rect[0].x, rect[1].y);
+  context.lineTo(rect[1].x, rect[1].y);
+  context.lineTo(rect[1].x, rect[0].y);
+  context.lineTo(rect[0].x, rect[0].y);
+  context.stroke();
+  context.closePath();
+
+  context.restore();
+}
 
 function redrawAllStrokes(){
   console.log(`redraw all ${strokesStack.length} strokes`)
@@ -324,13 +429,22 @@ function redrawAllStrokes(){
 
       case "sp":{
         drawCubicBezierSpline(strokeScreenSpace, stroke.color, stroke.width);
-        if (stateBools.show_control_points) 
+        if (debug.checked){
           drawStroke(strokeScreenSpace, "red", 1);
+        }
         break;
       }
       default: {
         drawStroke(strokeScreenSpace, stroke.color, stroke.width);
       }
+    }
+
+    if (debug.checked) {
+      const boundsScreenSpace = [
+        camera.toScreenSpace(stroke.bounds[0]),
+        camera.toScreenSpace(stroke.bounds[1])
+      ];
+      drawRect(boundsScreenSpace, "red", 1);
     }
   }
 
@@ -348,6 +462,8 @@ function drawCubicBezierSpline(points, color, width){
 
 
 function drawCubicBezier(points, color, width){
+  context.save();
+  
   context.beginPath();
   context.lineWidth = width;
   context.strokeStyle = `${color}`;
@@ -362,13 +478,19 @@ function drawCubicBezier(points, color, width){
 
   context.stroke();
   context.closePath();
+  context.restore();
 }
 
 
 
 // update webview from file: draw the strokes
 async function updateFromFile(strokesArr){
-  strokesStack = await Promise.all(strokesArr.map(a => a));
+  strokesStack = await Promise.all(strokesArr.map(a => {
+    return {
+      ...a,
+      bounds: findBoundBox(a.points) 
+    }
+  }));
   redrawAllStrokes();
 }
 
@@ -448,16 +570,16 @@ document.addEventListener('keydown', function(event){
     disableWhiteboard();
     canvas.style.pointerEvents = 'none';
   }
-  // if space pressed 
+  // if spacebar pressed 
   if (event.key == ' '){
     stateBools.panning = true;
   }
 });
 
 document.addEventListener('keyup', function(event){
-  // if space pressed 
+  // if spacebar pressed 
   if (event.key == ' '){
-    stateBools.space = false;
+    stateBools.spacebar = false;
     stateBools.panning = false;
   }
 });
