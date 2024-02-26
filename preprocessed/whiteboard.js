@@ -33,8 +33,8 @@ fun = document.getElementById('functions'),
 fillColor = document.querySelector("#fill"),
 smoothen = document.querySelector('#smooth'),
 debug = document.querySelector('#debuginfo'),
-storebtn = document.querySelector(".saveImage"),
-clearbtn = document.querySelector(".clearCanvas"),
+// storebtn = document.querySelector(".saveImage"),
+// clearbtn = document.querySelector(".clearCanvas"),
 toolButtons = document.querySelectorAll(".tool"),
 enableEdit = document.getElementById('initialOptions');
 
@@ -624,14 +624,14 @@ strokeButtons.forEach(btn2=> {
   });
 });
 
-clearbtn.addEventListener("click", () =>{
-  context.clearRect(0,0, canvas.width, canvas.height);
-});
+// clearbtn.addEventListener("click", () =>{
+//   context.clearRect(0,0, canvas.width, canvas.height);
+// });
 
-storebtn.addEventListener("click", ()=>{
-  disableWhiteboard();
-  canvas.style.pointerEvents = 'none';
-});
+// storebtn.addEventListener("click", ()=>{
+//   disableWhiteboard();
+//   canvas.style.pointerEvents = 'none';
+// });
 
 canvas.addEventListener('mousedown', startPosition);
 canvas.addEventListener('mouseup', endPosition);
