@@ -8,8 +8,9 @@ import pandas as pd
 
 app = Flask(__name__)
 
-model=load_model('letterCNN.h5')
-labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+model=load_model('htr.h5')
+labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt'
 
 @app.route('/predict_digit', methods=['POST'])
 def predict_digit():    
@@ -106,6 +107,7 @@ def predict():
     pred_idx = np.argmax(y)
     pred_char = labels[pred_idx]
     predictions = pred_char
+    print(pred_idx)
     return jsonify({'image': predictions})
 if __name__ == '__main__':
     app.run(debug=True) 
