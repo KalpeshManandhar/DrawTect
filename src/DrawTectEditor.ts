@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from "fs";
 
-import {DEV_MODE, EXTENSION_COMMANDS, PREPROCESSOR_EXPORT_FOLDER, WHITEBOARD_FOLDER} from './defines';
+import { DEV_MODE, DIRS_TO_CHECK, EXTENSION_COMMANDS, PREPROCESSOR_EXPORT_FOLDER, WHITEBOARD_FOLDER} from './defines';
 import { Preprocessor } from './preprocessor';
 
 interface DT_DocumentEdit{
@@ -57,11 +57,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
 
     // opens 
     public static async DT_openFileCommand(filename: string){
-        const DIRS_TO_CHECK: Array<string> = [
-            "dt",
-            "docs",
-            "deeznuts"
-        ];
+        
 
         if (await DT_EditorProvider.openFileCommand(filename)){
             return;

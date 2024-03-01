@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/style.css" id = "styles">
+  <title>DrawTect</title>
+</head>
+<body>
+  <div id = "initialOptions">
+    Edit
+  </div>
+  <div id="toolSelectionBox" class = "disabled">
+    <!-- <label><input type="radio" name="tool" value="pen" checked> Pen</label>
+    <label><input type="radio" name="tool" value="eraser"> Eraser</label> -->
+    <!-- <label><input type="radio" name="tool" value="rect"> Rect</label> -->
+    <ul class = "tools">
+    <li class = "option active tool" id = "pen"> <img src = "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/assets/pen.png" alt = ""></li>
+    <li class = "option tool" id = "select"> <img src = "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/assets/select.svg" alt = ""></li>
+    <li class = "option tool" id = "eraser"> <img src = "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/assets/eraser.svg" alt = ""></li>
+    <li class = "option tool" id = "circle"> <img src = "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/assets/circle.svg" alt = ""></li>
+    <li class = "option tool" id = "rectangle"><img src = "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/assets/rectangle.svg" alt = ""></li>
+    <li class = "option tool" id = "diamond"> <img src = "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/assets/diamond.svg" alt = ""></li>
+    </ul>
+  </div>
+  <div id = "functions" class = "disabled">
+    <!-- <button class = "option btn clearCanvas"> Clear</button>
+    <button class = "option btn saveImage"> Save</button> -->
+    </div>
+  <div id = "penOptions" class = "disabled">
+    <label class="title">Colours
+    <ul class = "chooseColours">
+      <li class = "option c active color" id = "Black"></li>
+      <li class = "option c color" id = "Yellow"></li>
+      <li class = "option c color" id = "Green"></li>
+      <li class = "option c color" id = "Cyan"></li>
+      <li class = "option c color" id = "Red"></li>
+    </ul>
+  </label>
+    <label class = "title" > Stroke Width</label>
+    <ul class = "chooseStroke">
+      <li class = "option s active stroke" id = "1"><img src = "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/assets/1x.svg" alt = ""></li>
+      <li class = "option s stroke" id = "3"><img src = "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/assets/3x.svg" alt = ""></li>
+      <li class = "option s stroke" id = "5"><img src = "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/assets/5x.svg" alt = ""></li>
+    </ul>
+    <!-- <label class="checkboxtitle"><input class= "checkbox" type = "checkbox" id = "fill">Fill Color</label><br> -->
+    <label class="checkboxtitle"><input class="checkbox" type = "checkbox" id = "smooth">Smooth Strokes</label><br>
+    <label class="checkboxtitle"><input class="checkbox" type = "checkbox" id = "debuginfo">Show debug info</label>
+  </div>
+  <canvas id="whiteboard" ></canvas>
+
+  <script type="module" src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/whiteboard.js"></script>
+  <script type="module" src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/interface.js"></script>
+  <script type="module" src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/spline.js"></script>
+</body>
+</html>

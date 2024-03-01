@@ -16,6 +16,7 @@
     <!-- <label><input type="radio" name="tool" value="rect"> Rect</label> -->
     <ul class = "tools">
     <li class = "option active tool" id = "pen"> <img src = "assets/pen.png" alt = ""></li>
+    <li class = "option tool" id = "select"> <img src = "assets/select.svg" alt = ""></li>
     <li class = "option tool" id = "eraser"> <img src = "assets/eraser.svg" alt = ""></li>
     <li class = "option tool" id = "circle"> <img src = "assets/circle.svg" alt = ""></li>
     <li class = "option tool" id = "rectangle"><img src = "assets/rectangle.svg" alt = ""></li>
@@ -23,8 +24,8 @@
     </ul>
   </div>
   <div id = "functions" class = "disabled">
-    <button class = "option btn clearCanvas"> Clear</button>
-    <button class = "option btn saveImage"> Save</button>
+    <!-- <button class = "option btn clearCanvas"> Clear</button>
+    <button class = "option btn saveImage"> Save</button> -->
     </div>
   <div id = "penOptions" class = "disabled">
     <label class="title">Colours
@@ -42,8 +43,9 @@
       <li class = "option s stroke" id = "3"><img src = "assets/3x.svg" alt = ""></li>
       <li class = "option s stroke" id = "5"><img src = "assets/5x.svg" alt = ""></li>
     </ul>
-    <label class="checkboxtitle"><input class= "checkbox" type = "checkbox" id = "fill">Fill Color</label><br>
-    <label class="checkboxtitle"><input class="checkbox" type = "checkbox" id = "smooth">Smooth Strokes</label>
+    <!-- <label class="checkboxtitle"><input class= "checkbox" type = "checkbox" id = "fill">Fill Color</label><br> -->
+    <label class="checkboxtitle"><input class="checkbox" type = "checkbox" id = "smooth">Smooth Strokes</label><br>
+    <label class="checkboxtitle"><input class="checkbox" type = "checkbox" id = "debuginfo">Show debug info</label>
   </div>
   <canvas id="whiteboard" ></canvas>
 
