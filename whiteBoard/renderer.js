@@ -8,7 +8,7 @@ export class Renderer{
 		const nSegments = (points.length-1)/3;
 		
 		for (let i = 0; i<nSegments; i++){
-			drawCubicBezier(points.slice(i*3, i*3+4), color, width);
+			this.drawCubicBezier(points.slice(i*3, i*3+4), color, width);
 		}
 	}
 	
@@ -53,4 +53,24 @@ export class Renderer{
 		this.context.restore();
   	}
 	
+	drawStroke(stroke, color, width){
+		if (stroke.length == 0) 
+		  return;
+	  
+		this.context.save();
+		this.context.strokeStyle = `${color}`;
+		this.context.lineWidth = width;
+	  
+		this.context.beginPath();
+	  
+		this.context.moveTo(stroke[0].x, stroke[0].y);
+	  
+		for (let point of stroke){
+		  this.context.lineTo(point.x, point.y);
+		}
+		this.context.stroke();
+		this.context.restore();
+	  
+	}
+
 }

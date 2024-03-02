@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS;
+
 import cv2
 from PIL import Image
 from tensorflow.keras.models import load_model
@@ -7,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 app = Flask(__name__)
+CORS(app)
 
 
 model=load_model('htr.h5')
@@ -87,6 +90,7 @@ def reverse_text():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    print(request.form)
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
     file = request.files['file']
