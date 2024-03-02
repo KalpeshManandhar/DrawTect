@@ -6,45 +6,27 @@ import { vscode } from "./interface.js";
 import { SelectTool } from "./selection.js";
 import { cubicBezierSplineFit } from "./spline.js";
 
+import drawShapes from "./shapes.js";
+const drawShape = new drawShapes;
+
+
 // detect user's colour mode
 function isDarkModePreferred() {
   return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
-function toggleColorScheme() {
-  const toolbox = document.getElementById('toolSelectionBox'),
-  penbox = document.getElementById('penOptions'),
-  functionBox = document.getElementById('functions'),
-  enableEdit = document.getElementById('initialOptions'),
-  functionOptions = document.querySelectorAll(".btn");
-
-  if (isDarkModePreferred()) {
-      toolbox.classList.add('dark-mode');
-      penbox.classList.add('dark-mode');
-      functionBox.classList.add('dark-mode');
-      enableEdit.classList.add('dark-mode');
-      functionOptions.forEach(btn => {
-        btn.classList.add('dark-mode');
-      });
-  } else {
-    toolbox.classList.remove('dark-mode');
-    penbox.classList.remove('dark-mode');
-    functionBox.classList.remove('dark-mode');
-    enableEdit.classList.remove('dark-mode');
-    functionOptions.forEach(btn => {
-      btn.classList.remove('dark-mode');
-    });
-  }
-}
-toggleColorScheme();
+import { toggleColorScheme } from "./user_mode.js";
+toggleColorScheme(isDarkModePreferred());
 
 // Event listener for changes in color scheme preference
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggleColorScheme);
 
 
 const canvas = document.getElementById('whiteboard'),
-context = canvas.getContext('2d'),
-colourButtons = document.querySelectorAll(".color"),
+context = canvas.getContext('2d');
+export { context };
+
+const colourButtons = document.querySelectorAll(".color"),
 strokeButtons = document.querySelectorAll(".stroke"),
 penOptions = document.getElementById('penOptions'),
 tools = document.getElementById('toolSelectionBox'),
@@ -52,8 +34,8 @@ fun = document.getElementById('functions'),
 fillColor = document.querySelector("#fill"),
 smoothen = document.querySelector('#smooth'),
 debug = document.querySelector('#debuginfo'),
-storebtn = document.querySelector(".saveImage"),
-clearbtn = document.querySelector(".clearCanvas"),
+// storebtn = document.querySelector(".saveImage"),
+// clearbtn = document.querySelector(".clearCanvas"),
 toolButtons = document.querySelectorAll(".tool"),
 enableEdit = document.getElementById('initialOptions');
 
@@ -215,66 +197,6 @@ function endPosition() {
 //context.beginPath();
 }
 
-const drawRectangle = (e) => {
-  if(!fillColor.checked){
-  return context.strokeRect(e.offsetX, e.offsetY, prevMousePosX - e.offsetX, prevMousePosY - e.offsetY);
-  }
-  context.fillRect(e.offsetX, e.offsetY, prevMousePosX - e.offsetX, prevMousePosY - e.offsetY);
-};
-
-const drawDiamond = (e) => {
-  const size = Math.min(Math.abs(prevMousePosX - e.offsetX), Math.abs(prevMousePosY - e.offsetY));
-  const centerX = (prevMousePosX + e.offsetX) /2;
-  const centerY = (prevMousePosY + e.offsetY) /2;
-  // current transformation state
-  context.save();
-
-  // trandlating the canvas to the center of the rectangle
-  context.translate(centerX, centerY);
-
-  // rotating the canvas by 45 degrees
-  context.rotate((45 * Math.PI) /180);
-  if(fillColor.checked){
-    context.fillRect(-size /2, -size /2, size, size);
-  }
-  // drawing the rectangle wit rotated coordinates
-  context.strokeRect(-size /2, -size /2, size, size);
-
-  // restoring the canvas
-  context.restore();
-
-};
-
-const drawCircle = (e) => {
-  context.beginPath();
-
-  let radius = Math.sqrt(Math.pow((prevMousePosX - e.offsetX), 2) + Math.pow((prevMousePosY - e.offsetY),2));
-  context.arc(prevMousePosX, prevMousePosY, radius, 0, 2 * Math.PI);
-
-  fillColor.checked ? context.fill() : context.stroke();
-  context.stroke();
-  context.closePath();
-  context.beginPath();
-};
-
-function lerp(a,b,t){
-	return a + (b-a) * t;
-}
-
-
-export function bezierTest(points, t){
-	const a = {x: lerp(points[0].x, points[1].x, t), y: lerp(points[0].y, points[1].y, t)};
-	const b = {x: lerp(points[1].x, points[2].x, t), y: lerp(points[1].y, points[2].y, t)};
-	const c = {x: lerp(points[2].x, points[3].x, t), y: lerp(points[2].y, points[3].y, t)};
-
-	const d = {x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t)};
-	const e = {x: lerp(b.x, c.x, t), y: lerp(b.y, c.y, t)};
-
-	const f = {x: lerp(d.x, e.x, t), y: lerp(d.y, e.y, t)};
-
-	return f;
-}
-
 
 function draw(e) {
   if (stateBools.panning){
@@ -293,64 +215,23 @@ function draw(e) {
   }
 
   if (!drawing) return;
+  //context.putImageData(snapshot,0,0);
+  
+  // if(singleElement){
+  //   snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
+  //   singleElement = false;  
+  // }
   context.lineCap = 'round';
 
   
   if(selectedTool === "rectangle"){
-   // drawRectangle(e);
-   let tempX = e.clientX;
-   let tempY = e.clientY;
-
-   context.fillStyle = 'rgba(255, 255, 255, 4.5)'; 
-   context.fillRect(prevMousePosX, prevMousePosY, tempX - prevMousePosX, tempY - prevMousePosY);
-
-   context.beginPath();
-   context.moveTo(prevMousePosX, prevMousePosY);
-   
-   context.lineTo(tempX, prevMousePosY);
-   context.lineTo(tempX, tempY);
-   context.lineTo(prevMousePosX, tempY);
-   context.lineTo(prevMousePosX,prevMousePosY);
-   context.closePath();
-   
-   
-   currentStroke = [
-    { x: prevMousePosX, y: prevMousePosY },
-    { x: tempX, y: prevMousePosY },
-    { x: tempX, y: tempY },
-    { x: prevMousePosX, y: tempY },
-    {x: prevMousePosX, y: prevMousePosY }
-  ];
-  context.stroke();
+   //drawShape.drawRectangle(e,prevMousePosX, prevMousePosY, fillColor);
+   currentStroke = drawShape.strokeRectangle(e, prevMousePosX, prevMousePosY);
   }
 
   else if(selectedTool === "diamond"){
-    //drawDiamond(e);
-
-    let tempX = e.clientX;
-    let tempY = e.clientY;
- 
-    context.fillStyle = 'rgba(255, 255, 255, 4.5)'; 
-    context.fillRect(prevMousePosX , prevMousePosY, tempX - prevMousePosX, tempY - prevMousePosY);
- 
-    context.beginPath();
-    context.moveTo(prevMousePosX + (( tempX - prevMousePosX )/2), prevMousePosY);
-    
-    context.lineTo(tempX, prevMousePosY + ((tempY - prevMousePosY)/2));
-    context.lineTo(tempX - ((tempX - prevMousePosX)/2), tempY);
-    context.lineTo(prevMousePosX,(prevMousePosY + tempY)/2);
-    context.lineTo(prevMousePosX + (( tempX - prevMousePosX )/2), prevMousePosY);
-    context.closePath();
-    
-    
-    currentStroke = [
-      { x: prevMousePosX + (( tempX - prevMousePosX )/2), y: prevMousePosY },
-      { x: tempX, y: prevMousePosY + ((tempY - prevMousePosY)/2)},
-      { x: tempX - ((tempX - prevMousePosX)/2), y: tempY },
-      { x: prevMousePosX, y: (prevMousePosY + tempY)/2 },
-      { x: prevMousePosX + (( tempX - prevMousePosX )/2), y: prevMousePosY }
-    ];
-    context.stroke();
+    //drawShape.drawDiamond(e, prevMousePosX, prevMousePosY, fillColor);
+    currentStroke = drawShape.strokeDiamond(e, prevMousePosX, prevMousePosY);
   }
 
   else if(selectedTool === "circle"){
@@ -703,14 +584,14 @@ strokeButtons.forEach(btn2=> {
   });
 });
 
-clearbtn.addEventListener("click", () =>{
-  context.clearRect(0,0, canvas.width, canvas.height);
-});
+// clearbtn.addEventListener("click", () =>{
+//   context.clearRect(0,0, canvas.width, canvas.height);
+// });
 
-storebtn.addEventListener("click", ()=>{
-  disableWhiteboard();
-  canvas.style.pointerEvents = 'none';
-});
+// storebtn.addEventListener("click", ()=>{
+//   disableWhiteboard();
+//   canvas.style.pointerEvents = 'none';
+// });
 
 canvas.addEventListener('mousedown', startPosition);
 canvas.addEventListener('mouseup', endPosition);
