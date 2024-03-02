@@ -176,6 +176,11 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
                 this.docAddNewStroke(document, event.data);
                 break;
             }
+            case "stroke-move":{
+                console.log("strokes moved");
+                this.docMoveStroke(document, event.data);
+                break;
+            }
             case "stroke-remove":{
                 console.log("Stroke removed");
                 break;
@@ -193,6 +198,22 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         docContent.strokes.push(strokeData);
 
         console.log(docContent);
+
+        const edit = new vscode.WorkspaceEdit();
+        edit.replace(
+            document.uri,
+            new vscode.Range(0, 0, document.lineCount, 0),
+            JSON.stringify(docContent)
+        );
+
+        vscode.workspace.applyEdit(edit);
+    }
+    
+    docMoveStroke(document: vscode.TextDocument, changes: any){
+        const docContent = this.getDocumentAsJson(document);
+        for (let change of changes){
+            docContent.strokes[change.index] = {...change.stroke};
+        }
 
         const edit = new vscode.WorkspaceEdit();
         edit.replace(

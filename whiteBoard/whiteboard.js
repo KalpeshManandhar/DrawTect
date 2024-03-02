@@ -3,6 +3,7 @@
 import { Rect, findBoundBox, insideRect, rectRectBoundingBox, rectRectOverlap } from "./bound.js";
 import { Camera2D } from "./camera.js";
 import { vscode } from "./interface.js";
+import { SelectTool } from "./selection.js";
 import { cubicBezierSplineFit } from "./spline.js";
 
 // detect user's colour mode
@@ -68,6 +69,7 @@ const stateBools = {
 
 
 
+
 // Set up canvas size
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -96,6 +98,7 @@ let isSelected = false;
 let drawing = false;
 
 let camera = new Camera2D(canvas.width, canvas.height, {x:0,y:0})
+let tool_SELECT = new SelectTool();
 
 
 class Stack{
@@ -131,6 +134,7 @@ class Stack{
   }
 }
 
+
 const snapshotStack = new Stack();
 
 function startPosition(e) {
@@ -143,12 +147,7 @@ function startPosition(e) {
 
   // the select tool
   if (selectedTool == "select"){
-    // moving a selected bunch of strokes
-    if (isSelected && insideRect({x:e.clientX, y: e.clientY}, combinedBoundingBoxSS)){
-      stateBools.moving = true;
-      return;
-    }
-    stateBools.selecting = true;
+    tool_SELECT.start(clickedAt);
     return;
   }
 
@@ -182,33 +181,17 @@ function endPosition() {
     return;
   }
 
-  if (stateBools.selecting){
-    stateBools.selecting = false;
-    
-    redrawAllStrokes();
+  if (selectedTool == "select"){
+    const changes = tool_SELECT.end(strokesStack, camera)
 
-    if (selectedStrokeIndices.length == 0){
-      isSelected = false;
-      return;
+    if (changes.length > 0){
+      vscode.postMessage({
+        type: "stroke-move",
+        data: changes
+        
+      })
     }
-
-    combinedBoundingBoxSS = [
-      camera.toScreenSpace(strokesStack[selectedStrokeIndices[0]].bounds[0]), 
-      camera.toScreenSpace(strokesStack[selectedStrokeIndices[0]].bounds[1])
-    ];
-
-    for (let selectedIndex of selectedStrokeIndices){
-      const strokeBoundsSS = [
-        camera.toScreenSpace(strokesStack[selectedIndex].bounds[0]), 
-        camera.toScreenSpace(strokesStack[selectedIndex].bounds[1])
-      ];  
-      drawRect(strokeBoundsSS, "blue", 1);
-      
-      combinedBoundingBoxSS = rectRectBoundingBox(strokeBoundsSS, combinedBoundingBoxSS);  
-    }
-    drawRect(combinedBoundingBoxSS, "blue", 1);
   }
-
 
   if (!drawing) return;
 
@@ -305,41 +288,11 @@ function draw(e) {
   prevCursorPos.y = e.clientY;
 
 
-  if (stateBools.selecting){
-    const selectBounds = Rect(clickedAt, {x: e.clientX, y: e.clientY});
-    const selectBoundsWS = [
-      camera.toWorldSpace(selectBounds[0]), 
-      camera.toWorldSpace(selectBounds[1])
-    ];
-
-    selectedStrokeIndices = [];
-    
-    redrawAllStrokes();
-    for (let strokeIndex in strokesStack){
-      if (rectRectOverlap(selectBoundsWS, strokesStack[strokeIndex].bounds)){
-        const bound = strokesStack[strokeIndex].bounds;
-        const strokeBoundsSS = [
-          camera.toScreenSpace(bound[0]), 
-          camera.toScreenSpace(bound[1])
-        ];  
-        drawRect(strokeBoundsSS, "blue", 1);
-        selectedStrokeIndices.push(strokeIndex);
-      } 
-    }
-
-    drawRect(selectBounds, "black", 1);
-    return;
+  if (selectedTool == "select"){
+    tool_SELECT.cursorMove(strokesStack, {x: e.clientX, y: e.clientY}, camera);
   }
 
-
   if (!drawing) return;
-  // context.putImageData(snapshot,0,0);
-  
-  // if(singleElement){
-  //   snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
-  //   singleElement = false;  
-  // }
-  // context.putImageData(snapshot,0,0);
   context.lineCap = 'round';
 
   
@@ -497,7 +450,7 @@ function disableWhiteboard(){
   enableEdit.classList.remove("disabled");
 }
 
-function drawStroke(stroke, color, width){
+export function drawStroke(stroke, color, width){
   if (stroke.length == 0) 
     return;
 
@@ -524,7 +477,7 @@ function clearBackground(color){
 }
 
 // rect is [min, max]
-function drawRect(rect, color, width=1){
+export function drawRect(rect, color, width=1){
   context.save();
   
   context.strokeStyle = `${color}`;
@@ -542,7 +495,7 @@ function drawRect(rect, color, width=1){
   context.restore();
 }
 
-function redrawAllStrokes(){
+export function redrawAllStrokes(){
   console.log(`redraw all ${strokesStack.length} strokes`)
 
   clearBackground("white");
