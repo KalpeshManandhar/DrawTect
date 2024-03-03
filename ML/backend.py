@@ -8,10 +8,9 @@ import pickle
 import numpy as np
 import preproces as pp
 
-app = Flask(__name__)
-CORS(app)
 
 app = Flask(__name__)
+CORS(app)
 app.config['UPLOAD_FOLDER'] = 'ML\\upload'
 
 model=load_model('htr.h5')

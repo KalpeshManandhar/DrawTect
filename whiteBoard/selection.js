@@ -1,6 +1,6 @@
 import { insideRect, Rect, rectRectOverlap, rectRectBoundingBox } from "./bound.js";
 import { Renderer } from "./renderer.js";
-import { redrawAllStrokes, drawRect, drawCubicBezierSpline, drawStroke} from "./whiteboard.js";
+import { redrawAllStrokes, drawRect } from "./whiteboard.js";
 
 export class SelectTool{
 	constructor(){
@@ -147,14 +147,14 @@ export class SelectTool{
 		}
 	}
 
+	
 	getStrokesImage(strokes){
 		if (!this.isSelected){
 			console.error("Nothing selected");
 			return;
 		}
 
-		// const scratchpad = document.createElement("canvas");
-		const scratchpad = document.getElementById("whiteboard")
+		const scratchpad = document.createElement("canvas");
 		const context = scratchpad.getContext("2d");
 		
 		if (!context){
@@ -187,10 +187,6 @@ export class SelectTool{
 			}
 		}
 		let imageData = scratchpad.toDataURL('image/png');
-		// Append an image element to the body to display the canvas image
-		const imgElement = document.createElement('img');
-		imgElement.src = imageData;
-		document.body.appendChild(imgElement);
 
 		return imageData;
 
