@@ -1,13 +1,16 @@
 from flask import Flask, request, jsonify
+from werkzeug.utils import secure_filename
+import os
 import cv2
 from PIL import Image
 from tensorflow.keras.models import load_model
 import pickle
 import numpy as np
-import pandas as pd
+import preproces as pp
+
 
 app = Flask(__name__)
-
+app.config['UPLOAD_FOLDER'] = 'ML\\upload'
 
 model=load_model('htr.h5')
 labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt'
@@ -109,5 +112,32 @@ def predict():
     predictions = pred_char
     print(pred_idx)
     return jsonify({'image': predictions})
+
+
+@app.route('/prediction', methods=['POST'])
+def prediction():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+    file = request.files['file']
+    # Check if the file is empty
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
+    
+    img = cv2.imdecode(np.frombuffer(file.read(), np.uint8), cv2.IMREAD_COLOR)
+    # Save the file to a temporary location
+    # temp_filename = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
+    # file.save(temp_filename)
+    
+    # Perform image processing
+    label = pp.Test()
+    predictions = label.readImage(img=img)
+    
+    # Remove the temporary file
+    # os.remove(file)
+    
+    return jsonify({'image': predictions})
+
+    
+
 if __name__ == '__main__':
     app.run(debug=True) 

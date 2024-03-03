@@ -12,25 +12,25 @@ class Test():
 	def __init__(self) -> None:
 		self.model=load_model('htr.h5')
 		self.finalStr=str('')
-		self.maxGap=50
+		self.maxGap=100
 		self.lastX=0
 		self.lastY=0
 		self.contourNumber=0
 		# self.mapp=pd.read_csv('')
 
 	
-	def readImage(self, image_uri):
+	def readImage(self, image_uri=False,img=False):
 		self.finalStr=""
 		# Read image
-		self.image=cv2.imread(image_uri)
+		self.image=cv2.imread(image_uri) if image_uri==True else img
 		# Create a copy of image and convert it to grayscale
 		gray=cv2.cvtColor(self.image.copy(),cv2.COLOR_BGR2GRAY)
 
 		# if pixel>85 convert to 0 meaning black else convert to while meaning 255
-		ret, thresh= cv2.threshold(gray.copy(),85,255,cv2.THRESH_BINARY_INV)
+		ret, thresh= cv2.threshold(gray.copy(),100,255,cv2.THRESH_BINARY_INV)
 
 		contours, hierarchy=cv2.findContours(thresh.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-		print(contours)
+		print(len(contours))
 
 		cList=[]
 		for i in contours:
@@ -39,9 +39,11 @@ class Test():
 		nparray=np.array(cList)
 		maxHeight=nparray.max(axis=0)[3]
 		nearest=maxHeight*	1.4
-		sorted_contours=sorted(contours,
-						 key=lambda ctr:[int(nearest * round(float(cv2.boundingRect(ctr)[1])/nearest)),
-					   cv2.boundingRect(ctr)[0]])
+		# sorted_contours=sorted(contours,
+		# 				 key=lambda ctr:[int(nearest * round(float(cv2.boundingRect(ctr)[1])/nearest)),
+		# 			   cv2.boundingRect(ctr)[0]])
+		sorted_contours = sorted(contours, key=lambda ctr: (cv2.boundingRect(ctr)[0]/nearest, cv2.boundingRect(ctr)[1]))
+
 
 		counter=0
 		sumGap=0
@@ -68,7 +70,7 @@ class Test():
 			x,y,w,h=cv2.boundingRect(c)
 
 			if self.contourNumber != 0 and x-self.lastX>self.maxGap:
-				self.finalStr +=' '
+				self.finalStr +=''
 				isFirst=True
 			
 			# if self.contourNumber !=0 and y>self.lastY:
@@ -107,20 +109,12 @@ class Test():
 			isFirst= False
 
 		print(f"{self.finalStr}")
-		cv2.imshow('Detected Text', self.image)
-		cv2.waitKey(0)
-		cv2.destroyAllWindows()
+		# cv2.imshow('Detected Text', self.image)
+		# cv2.waitKey(0)
+		# cv2.destroyAllWindows()
+		return self.finalStr
 		
 
-
-label=Test()
-label.readImage('test.png')
-
-		
-			
-			
-
-
-
-		
-			
+if __name__ == '__main__':    
+	label=Test()
+	# label.readImage('test.png')
