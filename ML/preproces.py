@@ -5,12 +5,14 @@ from tensorflow.keras.models import load_model
 import pandas as pd
 
 
-labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt'
+# labels = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt'
+labels = '0ABCDEFGHIJKLMNOPQRSTUVWXYZabdefghnqrt'
+
 
 
 class Test():
 	def __init__(self) -> None:
-		self.model=load_model('htr.h5')
+		self.model=load_model('htrNormalized2.h5')
 		self.finalStr=str('')
 		self.maxGap=100
 		self.lastX=0
@@ -90,9 +92,14 @@ class Test():
 			padded_digit=np.pad(resized_digit,((4,4),(4,4)),"constant",constant_values=0)
 
 			padded_digit = padded_digit.astype('float32')/255
+			# padded_digit = padded_digit.astype('float32')
+
 
 			prediction= self.model.predict(padded_digit.reshape(1,28,28,1))
 			pred_str=labels[np.argmax(prediction)]
+			# For new model
+			# pred_str=labels[np.argmax(prediction)-1]
+
 
 			cv2.putText(self.image,str(pred_str),(x,y-10),
 			   cv2.FONT_HERSHEY_SIMPLEX,0.6,(36,255,12),2)
@@ -109,9 +116,9 @@ class Test():
 			isFirst= False
 
 		print(f"{self.finalStr}")
-		# cv2.imshow('Detected Text', self.image)
-		# cv2.waitKey(0)
-		# cv2.destroyAllWindows()
+		cv2.imshow('Detected Text', self.image)
+		cv2.waitKey(0)
+		cv2.destroyAllWindows()
 		return self.finalStr
 		
 
