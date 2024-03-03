@@ -94,7 +94,7 @@ export class Preprocessor{
 	}
 	
 	private preprocessAndExportJS(baseDir: string, jsFile: string){
-		const regex = /["']\/?([\w*\\*/*.*\s*]*.(?:css|js|png|svg|jpeg|jpg))["']/g;
+		const regex = /["']\/?([\w*\\*/*.*\s*]*.(?:css|js|svg|jpeg|jpg))["']/g;
 		this.preprocessPathAndExport(baseDir, jsFile, regex);
 	}
 	

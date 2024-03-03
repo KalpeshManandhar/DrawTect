@@ -1,5 +1,6 @@
 import { insideRect, Rect, rectRectOverlap, rectRectBoundingBox } from "./bound.js";
-import { redrawAllStrokes, drawRect } from "./whiteboard.js";
+import { Renderer } from "./renderer.js";
+import { redrawAllStrokes, drawRect, drawCubicBezierSpline, drawStroke} from "./whiteboard.js";
 
 export class SelectTool{
 	constructor(){
@@ -111,7 +112,7 @@ export class SelectTool{
 		
 			if (this.selectedStrokeIndices.length == 0){
 			  	this.isSelected = false;
-			 	return;
+			 	return [];
 			}
 		
 			this.combinedBoundingBoxSS = [
@@ -146,21 +147,52 @@ export class SelectTool{
 		}
 	}
 
-	getStrokesImage(){
+	getStrokesImage(strokes){
 		if (!this.isSelected){
-
+			console.error("Nothing selected");
+			return;
 		}
 
-		const scratchpad = document.createElement("canvas");
+		// const scratchpad = document.createElement("canvas");
+		const scratchpad = document.getElementById("whiteboard")
 		const context = scratchpad.getContext("2d");
-		// scratchpad.width = this.combinedBoundingBoxSS
-
+		
 		if (!context){
 			console.error("Cannot create canvas context");
 			return
 		}
 		
-		// context.
+		const padding = 5;
+		scratchpad.width = this.combinedBoundingBoxSS[1].x - this.combinedBoundingBoxSS[0].x + 2 * padding;
+		scratchpad.height = this.combinedBoundingBoxSS[1].y - this.combinedBoundingBoxSS[0].y + 2 * padding;
+		
+		const r = new Renderer(scratchpad);
+
+		for (let index of this.selectedStrokeIndices){
+			let s = strokes[index];
+			let localS = {
+				points: s.points.map(p => {
+					return {
+						x: p.x - this.combinedBoundingBoxSS[0].x + padding,
+						y: p.y - this.combinedBoundingBoxSS[0].y + padding
+					};
+				}),
+				color: s.color,
+				width: s.width
+			}
+			if (s.type == "sp"){
+				r.drawCubicBezierSpline(localS.points, localS.color, localS.width);
+			}else{
+				r.drawStroke(localS.points, localS.color, localS.width);
+			}
+		}
+		let imageData = scratchpad.toDataURL('image/png');
+		// Append an image element to the body to display the canvas image
+		const imgElement = document.createElement('img');
+		imgElement.src = imageData;
+		document.body.appendChild(imgElement);
+
+		return imageData;
 
 	}
 

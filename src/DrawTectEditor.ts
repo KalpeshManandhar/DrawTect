@@ -91,6 +91,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
 
         webviewPanel.webview.options = {
             enableScripts: true,
+            enableCommandUris: true
             // localResourceRoots: [
             //     vscode.Uri.file(`${this.context.extensionPath}/whiteboard`),
             //     vscode.Uri.file(`${this.context.extensionPath}/node_modules`)

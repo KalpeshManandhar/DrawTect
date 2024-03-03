@@ -16,6 +16,7 @@ function isDarkModePreferred() {
 }
 
 import { toggleColorScheme } from "./user_mode.js";
+import { sendToHTR } from "./htrInterface.js";
 toggleColorScheme(isDarkModePreferred());
 
 // Event listener for changes in color scheme preference
@@ -412,7 +413,7 @@ export function redrawAllStrokes(){
 }
 
 
-function drawCubicBezierSpline(points, color, width){
+export function drawCubicBezierSpline(points, color, width){
   const nSegments = (points.length-1)/3;
 
   for (let i = 0; i<nSegments; i++){
@@ -596,6 +597,18 @@ strokeButtons.forEach(btn2=> {
 canvas.addEventListener('mousedown', startPosition);
 canvas.addEventListener('mouseup', endPosition);
 canvas.addEventListener('mousemove', draw);
+document.addEventListener('keydown', (e) => {
+  if (e.key == 'p'){
+    console.log("P pressed")
+    if (selectedTool == "select"){
+      const imageData = tool_SELECT.getStrokesImage(strokesStack);
+      console.log(imageData);
+      sendToHTR(imageData);
+    }
+  }
+})
+
+
 
 canvas.style.pointerEvents = 'none';
 const state = vscode.getState();

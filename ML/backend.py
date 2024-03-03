@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
-from werkzeug.utils import secure_filename
-import os
+from flask_cors import CORS;
+
 import cv2
 from PIL import Image
 from tensorflow.keras.models import load_model
@@ -8,6 +8,8 @@ import pickle
 import numpy as np
 import preproces as pp
 
+app = Flask(__name__)
+CORS(app)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'ML\\upload'
@@ -90,6 +92,7 @@ def reverse_text():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    print(request.form)
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
     file = request.files['file']
