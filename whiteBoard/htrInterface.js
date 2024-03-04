@@ -19,7 +19,7 @@ export async function sendToHTR(imageData){
 	for (const key of formData.keys()) {
 		console.log(key);
 	}
-	await fetch('http://127.0.0.1:5000/predict', {
+	await fetch('http://127.0.0.1:5000/prediction', {
 		method: 'POST',
 		body: formData,
 	})

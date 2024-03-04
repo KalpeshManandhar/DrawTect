@@ -115,11 +115,13 @@ def predict():
     print(pred_idx)
     return jsonify({'image': predictions})
 
+CORS(app)
 
 @app.route('/prediction', methods=['POST'])
 def prediction():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
+
     file = request.files['file']
     # Check if the file is empty
     if file.filename == '':

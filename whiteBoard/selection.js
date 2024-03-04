@@ -1,6 +1,7 @@
-import { insideRect, Rect, rectRectOverlap, rectRectBoundingBox } from "./bound.js";
+import { insideRect, Rect, rectRectOverlap, rectRectBoundingBox, findBoundBox } from "./bound.js";
+import { preprocess } from "./preprocess.js";
 import { Renderer } from "./renderer.js";
-import { redrawAllStrokes, drawRect } from "./whiteboard.js";
+import { redrawAllStrokes, drawRect, drawStroke, drawCubicBezierSpline } from "./whiteboard.js";
 
 export class SelectTool{
 	constructor(){
@@ -162,31 +163,78 @@ export class SelectTool{
 			return
 		}
 		
+		const strokesSelected = this.selectedStrokeIndices.map(i => {
+			return strokes[i];
+		});
+		
+		const [angle, pivot] = preprocess(strokesSelected);
+		
+		const rotateAbout = (point, angle, pivot)=>{
+			let translated = {
+				x: point.x - pivot.x, 
+				y: point.y - pivot.y 
+			};
+
+			let rotated = {
+				x: translated.x * Math.cos(angle) - translated.y * Math.sin(angle), 
+				y: translated.x * Math.sin(angle) + translated.y * Math.cos(angle) 
+			};
+
+			let translatedBack = {
+				x: rotated.x + pivot.x,
+				y: rotated.y + pivot.y
+			};
+			return translatedBack;
+		}
+
+		// rotate strokes to somewhat align
+		const rotatedStrokes = strokesSelected.map(stroke => {
+			const p = stroke.points.map(point => {
+				return rotateAbout(point, -angle, pivot);
+			});
+			return {
+				points: p,
+				bounds: findBoundBox(p),
+				color: stroke.color,
+				width: stroke.width,
+				type: stroke.type
+			}
+		});
+
+		// calculate bounding box of rotated strokes
+		let bound = rotatedStrokes[0].bounds;
+		for (let s of rotatedStrokes){
+			bound = rectRectBoundingBox(bound, s.bounds);
+		}
+
 		const padding = 5;
-		scratchpad.width = this.combinedBoundingBoxSS[1].x - this.combinedBoundingBoxSS[0].x + 2 * padding;
-		scratchpad.height = this.combinedBoundingBoxSS[1].y - this.combinedBoundingBoxSS[0].y + 2 * padding;
+		scratchpad.width = bound[1].x - bound[0].x + 2 * padding;
+		scratchpad.height = bound[1].y - bound[0].y + 2 * padding;
 		
 		const r = new Renderer(scratchpad);
 
-		for (let index of this.selectedStrokeIndices){
-			let s = strokes[index];
+		for (let s of rotatedStrokes){
 			let localS = {
 				points: s.points.map(p => {
 					return {
-						x: p.x - this.combinedBoundingBoxSS[0].x + padding,
-						y: p.y - this.combinedBoundingBoxSS[0].y + padding
+						x: p.x - bound[0].x + padding,
+						y: p.y - bound[0].y + padding
 					};
 				}),
 				color: s.color,
 				width: s.width
 			}
 			if (s.type == "sp"){
-				r.drawCubicBezierSpline(localS.points, localS.color, localS.width);
+				drawCubicBezierSpline(localS.points, localS.color, localS.width);
 			}else{
-				r.drawStroke(localS.points, localS.color, localS.width);
+				drawStroke(localS.points, localS.color, localS.width);
 			}
 		}
 		let imageData = scratchpad.toDataURL('image/png');
+
+		const imgElement = document.createElement('img');
+		imgElement.src = imageData;
+		document.body.appendChild(imgElement);
 
 		return imageData;
 
