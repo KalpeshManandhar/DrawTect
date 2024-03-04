@@ -52,6 +52,13 @@ export class Renderer{
 
 		this.context.restore();
   	}
+
+	clear(color){
+		this.context.save();
+		this.context.fillStyle = `${color}`;
+		this.context.fillRect(0,0, this.canvas.width, this.canvas.height);
+		this.context.restore();
+	}
 	
 	drawStroke(stroke, color, width){
 		if (stroke.length == 0) 

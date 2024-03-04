@@ -212,6 +212,7 @@ export class SelectTool{
 		scratchpad.height = bound[1].y - bound[0].y + 2 * padding;
 		
 		const r = new Renderer(scratchpad);
+		r.clear("white");
 
 		for (let s of rotatedStrokes){
 			let localS = {
@@ -221,20 +222,17 @@ export class SelectTool{
 						y: p.y - bound[0].y + padding
 					};
 				}),
-				color: s.color,
+				color: "black",
 				width: s.width
 			}
 			if (s.type == "sp"){
-				drawCubicBezierSpline(localS.points, localS.color, localS.width);
+				r.drawCubicBezierSpline(localS.points, localS.color, localS.width);
 			}else{
-				drawStroke(localS.points, localS.color, localS.width);
+				r.drawStroke(localS.points, localS.color, localS.width);
 			}
 		}
 		let imageData = scratchpad.toDataURL('image/png');
 
-		const imgElement = document.createElement('img');
-		imgElement.src = imageData;
-		document.body.appendChild(imgElement);
 
 		return imageData;
 
