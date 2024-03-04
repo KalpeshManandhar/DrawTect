@@ -63,8 +63,7 @@ class Test():
 			
 			lastX = x+w
 			lastY=y+h
-		
-		self.maxGap=int(sumGap/(counter-1))
+		self.maxGap=int(sumGap/(counter-1)) if counter>1 else int(sumGap)
 		print(f"Max Gap:{self.maxGap}: Counter {counter}")
 
 		isFirst=True
