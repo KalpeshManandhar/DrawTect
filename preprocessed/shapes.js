@@ -6,21 +6,12 @@ import {context} from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawT
 class drawShapes{
 
 	strokeRectangle(e, prevMousePosX, prevMousePosY) {
+
 		let tempX = e.clientX;
         let tempY = e.clientY;
 		let strokeStack = [];
 
-        context.fillStyle = 'rgba(255, 255, 255, 4.5)';
-        context.fillRect(prevMousePosX, prevMousePosY, tempX - prevMousePosX, tempY - prevMousePosY);
-
-        context.beginPath();
-        context.moveTo(prevMousePosX, prevMousePosY);
-
-        context.lineTo(tempX, prevMousePosY);
-        context.lineTo(tempX, tempY);
-        context.lineTo(prevMousePosX, tempY);
-        context.lineTo(prevMousePosX, prevMousePosY);
-        context.closePath();
+		this.drawRectangle(e, prevMousePosX, prevMousePosY);
 
         strokeStack = [
             { x: prevMousePosX, y: prevMousePosY },
@@ -39,17 +30,7 @@ class drawShapes{
 		let tempY = e.clientY;
 		let strokeStack = [];
 
-		context.fillStyle = 'rgba(255, 255, 255, 4.5)'; 
-		context.fillRect(prevMousePosX , prevMousePosY, tempX - prevMousePosX, tempY - prevMousePosY);
-
-		context.beginPath();
-		context.moveTo(prevMousePosX + (( tempX - prevMousePosX )/2), prevMousePosY);
-
-		context.lineTo(tempX, prevMousePosY + ((tempY - prevMousePosY)/2));
-		context.lineTo(tempX - ((tempX - prevMousePosX)/2), tempY);
-		context.lineTo(prevMousePosX,(prevMousePosY + tempY)/2);
-		context.lineTo(prevMousePosX + (( tempX - prevMousePosX )/2), prevMousePosY);
-		context.closePath();
+		this.drawDiamond(e, prevMousePosX, prevMousePosY);
 
 
 		strokeStack = [
@@ -113,17 +94,19 @@ class drawShapes{
 		return strokeStack;
 	}
 
-	drawRectangle = (e, prevMousePosX, prevMousePosY, fillColor) => {
-		if(!fillColor.checked){
-		return context.strokeRect(e.offsetX, e.offsetY, prevMousePosX - e.offsetX, prevMousePosY - e.offsetY);
-		}
-		context.fillRect(e.offsetX, e.offsetY, prevMousePosX - e.offsetX, prevMousePosY - e.offsetY);
+	drawRectangle = (e, prevMousePosX, prevMousePosY) => {
+		// if(!fillColor.checked){
+		// return context.strokeRect(e.offsetX, e.offsetY, prevMousePosX - e.offsetX, prevMousePosY - e.offsetY);
+		// }
+		// context.fillRect(e.offsetX, e.offsetY, prevMousePosX - e.offsetX, prevMousePosY - e.offsetY);
+
+		return context.strokeRect(e.clientX, e.clientY, prevMousePosX - e.clientX, prevMousePosY - e.clientY);
 	};
 	
-	drawDiamond = (e, prevMousePosX, prevMousePosY, fillColor) => {
-		const size = Math.min(Math.abs(prevMousePosX - e.offsetX), Math.abs(prevMousePosY - e.offsetY));
-		const centerX = (prevMousePosX + e.offsetX) /2;
-		const centerY = (prevMousePosY + e.offsetY) /2;
+	drawDiamond = (e, prevMousePosX, prevMousePosY) => {
+		const size = Math.min(Math.abs(prevMousePosX - e.clientX), Math.abs(prevMousePosY - e.clientY));
+		const centerX = (prevMousePosX + e.clientX) /2;
+		const centerY = (prevMousePosY + e.clientY) /2;
 		// current transformation state
 		context.save();
 	
@@ -132,9 +115,9 @@ class drawShapes{
 	
 		// rotating the canvas by 45 degrees
 		context.rotate((45 * Math.PI) /180);
-		if(fillColor.checked){
-		context.fillRect(-size /2, -size /2, size, size);
-		}
+		// if(fillColor.checked){
+		// context.fillRect(-size /2, -size /2, size, size);
+		// }
 		// drawing the rectangle wit rotated coordinates
 		context.strokeRect(-size /2, -size /2, size, size);
 	

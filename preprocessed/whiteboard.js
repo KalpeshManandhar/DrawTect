@@ -227,8 +227,8 @@ function draw(e) {
   
   if(selectedTool === "rectangle"){
     
-   drawShape.drawRectangle(e,prevMousePosX, prevMousePosY, fillColor);
-   //currentStroke = drawShape.strokeRectangle(e, prevMousePosX, prevMousePosY);
+   //drawShape.drawRectangle(e,prevMousePosX, prevMousePosY);
+   currentStroke = drawShape.strokeRectangle(e, prevMousePosX, prevMousePosY);
   }
 
   else if(selectedTool === "diamond"){
@@ -245,7 +245,7 @@ function draw(e) {
 
     let centerX = prevMousePosX + ((tempX - prevMousePosX)/2);
     let centerY = prevMousePosY + ((tempY - prevMousePosY)/2);
-    currentStroke = drawShape.getFinalCircle(e, finalRadius, centerX, centerY,200);
+    currentStroke = drawShape.getFinalCircle(e, finalRadius, centerX, centerY,500);
     }
   
 
