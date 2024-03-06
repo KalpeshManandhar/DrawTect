@@ -1,6 +1,6 @@
 //shapes drawer
 
-import {context} from "./whiteboard.js";
+import {context} from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./whiteboard.js";
 
 
 class drawShapes{

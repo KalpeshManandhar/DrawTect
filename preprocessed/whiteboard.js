@@ -1,12 +1,12 @@
 // whiteboard.js
 
-import { Rect, findBoundBox, insideRect, rectRectBoundingBox, rectRectOverlap } from "./bound.js";
-import { Camera2D } from "./camera.js";
-import { vscode } from "./interface.js";
-import { SelectTool } from "./selection.js";
-import { cubicBezierSplineFit } from "./spline.js";
+import { Rect, findBoundBox, insideRect, rectRectBoundingBox, rectRectOverlap } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./bound.js";
+import { Camera2D } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./camera.js";
+import { vscode } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./interface.js";
+import { SelectTool } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./selection.js";
+import { cubicBezierSplineFit } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./spline.js";
 
-import drawShapes from "./shapes.js";
+import drawShapes from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./shapes.js";
 const drawShape = new drawShapes;
 
 
@@ -15,8 +15,8 @@ function isDarkModePreferred() {
   return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
-import { toggleColorScheme } from "./user_mode.js";
-import { sendToHTR } from "./htrInterface.js";
+import { toggleColorScheme } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./user_mode.js";
+import { sendToHTR } from "https://file%2B.vscode-resource.vscode-cdn.net/c%3A/DrawTect/preprocessed/./htrInterface.js";
 toggleColorScheme(isDarkModePreferred());
 
 // Event listener for changes in color scheme preference
