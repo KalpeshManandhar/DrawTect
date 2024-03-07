@@ -111,10 +111,10 @@ export class SelectTool{
 			
 			redrawAllStrokes();
 		
-			if (this.selectedStrokeIndices.length == 0){
-			  	this.isSelected = false;
-			 	return [];
-			}
+		if (this.selectedStrokeIndices.length == 0){
+			this.isSelected = false;
+			return [];
+		}
 		
 			this.combinedBoundingBoxSS = [
 				camera.toScreenSpace(strokes[this.selectedStrokeIndices[0]].bounds[0]), 

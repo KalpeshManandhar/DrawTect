@@ -184,6 +184,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
             }
             case "stroke-remove":{
                 console.log("Stroke removed");
+                this.docRemoveStroke(document, event.data);
                 break;
             }
             case "stroke-undo":{
@@ -199,6 +200,23 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         docContent.strokes.push(strokeData);
 
         console.log(docContent);
+
+        const edit = new vscode.WorkspaceEdit();
+        edit.replace(
+            document.uri,
+            new vscode.Range(0, 0, document.lineCount, 0),
+            JSON.stringify(docContent)
+        );
+
+        vscode.workspace.applyEdit(edit);
+    }
+
+    docRemoveStroke(document: vscode.TextDocument, changes:any){
+        const docContent = this.getDocumentAsJson(document);
+
+        for (let rindex of changes){
+            docContent.strokes.splice(rindex, 1);
+        }
 
         const edit = new vscode.WorkspaceEdit();
         edit.replace(
