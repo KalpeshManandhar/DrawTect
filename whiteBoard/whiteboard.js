@@ -183,12 +183,13 @@ function endPosition() {
   }
 
   if (selectedTool == "eraser"){
-    const changes = ERASER.end();
-
-    if (changes.length > 0){
+    const erasedI = ERASER.end();
+    
+		console.log("received the indices for erased strokes : ", erasedI);
+    if (erasedI.length > 0){
       vscode.postMessage({
         type: "stroke-remove",
-        data: changes
+        data: erasedI
         
       });
     }

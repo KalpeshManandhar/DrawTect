@@ -217,12 +217,13 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         vscode.workspace.applyEdit(edit);
     }
 
-    docRemoveStroke(document: vscode.TextDocument, changes:any){
+    docRemoveStroke(document: vscode.TextDocument, erasedI:any){
         const docContent = this.getDocumentAsJson(document);
 
-        for (let rindex of changes){
+        for (let rindex of erasedI){
             docContent.strokes.splice(rindex, 1);
         }
+        console.log(docContent);
 
         const edit = new vscode.WorkspaceEdit();
         edit.replace(

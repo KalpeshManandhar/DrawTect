@@ -58,7 +58,7 @@ class eraser{
 			}
 
 			strokes.splice(selectedIndex, 1);
-			this.removeIndex.push(selectedIndex);
+			this.removeIndex[0] = selectedIndex;
 			console.log("erased indices ", this.removeIndex);
 			redrawAllStrokes();
 		}
@@ -89,12 +89,13 @@ class eraser{
 
 			if (this.selectedStrokeIndices.length == 0){
 				this.erase = false;
+				return this.removeIndex;
 			}
-			return [];
+			return this.removeIndex;
 		}
-		else if (this.erase){
+		if (this.erase){
 			this.erase = false;
-
+			console.log("sending the indices for erased strokes");
 			return this.removeIndex;
 		}
 	}
