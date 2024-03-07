@@ -18,6 +18,7 @@ function isDarkModePreferred() {
 
 import { toggleColorScheme } from "./user_mode.js";
 import { sendToHTR } from "./htrInterface.js";
+import { Img } from "./images.js";
 toggleColorScheme(isDarkModePreferred());
 
 // Event listener for changes in color scheme preference
@@ -73,10 +74,8 @@ let strokesStack = [];
 let redoStrokesStack = [];
 let currentStroke = [];
 
-
-let selectedStrokeIndices = [];
-let combinedBoundingBoxSS = [];
-let isSelected = false;
+let images = []
+images.push(new Img("/test/test.jpg", "filepath"))
 
 
 let drawing = false;
@@ -363,6 +362,10 @@ export function redrawAllStrokes(){
     }
   }
 
+  for (let image of images){
+    image.draw(context, camera)
+  }
+
   
 }
 
@@ -557,6 +560,25 @@ document.addEventListener('keydown', (e) => {
       const imageData = tool_SELECT.getStrokesImage(strokesStack);
       console.log(imageData);
       sendToHTR(imageData);
+    }
+  }
+})
+
+
+window.addEventListener("keydown", async (e) => {
+  if (e.ctrlKey && e.key == 'v'){
+    const contents = await navigator.clipboard.read();
+    console.log(contents);
+    for (const item of contents){
+      if (item.types.includes("image/png")){
+        const blob = await item.getType("image/png");
+        images.push(new Img(URL.createObjectURL(blob), "blob"));
+      }
+      else if (item.types.includes("text/plain")){
+        // images.push(new Img());
+      }
+
+      
     }
   }
 })

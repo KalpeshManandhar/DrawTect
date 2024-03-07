@@ -123,7 +123,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
 
         // receive message from webview
         webviewPanel.webview.onDidReceiveMessage((e) => {
-            this.handleMessageFromWebview(document, e);
+            this.handleMessageFromWebview(webviewPanel.webview, document, e);
         });
 
         const docInfo = this.getDocumentAsJson(document);
@@ -164,7 +164,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
 	}
 
 
-    handleMessageFromWebview(document: vscode.TextDocument, event: any){
+    handleMessageFromWebview(webview: vscode.Webview, document: vscode.TextDocument, event: any){
         switch (event.type){
             case "stroke-add":{
                 /*
@@ -190,6 +190,12 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
             case "stroke-undo":{
                 
                 console.log("Stroke undo");
+                break;
+            }
+            case "uri-change":{
+                const filePath = vscode.Uri.file(`${this.context.asAbsolutePath(event.path)}`);
+                const webviewURI = webview.asWebviewUri(filePath);
+                this.sendMessageToWebview(webview, "uri-change", {path: webviewURI.toString()});
                 break;
             }
         }
