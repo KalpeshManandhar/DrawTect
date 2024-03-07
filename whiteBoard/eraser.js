@@ -1,4 +1,4 @@
-import { insideRect, Rect, rectRectOverlap, rectRectBoundingBox, findBoundBox } from "./bound.js";
+import { Rect, rectRectOverlap } from "./bound.js";
 import { redrawAllStrokes, drawRect } from "./whiteboard.js";
 
 class eraser{

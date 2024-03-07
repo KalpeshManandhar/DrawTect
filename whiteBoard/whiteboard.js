@@ -74,8 +74,8 @@ let strokesStack = [];
 let redoStrokesStack = [];
 let currentStroke = [];
 
-let images = []
-images.push(new Img("/test/test.jpg", "filepath"))
+let images = [];
+// images.push(new Img("/test/test.jpg", "filepath"))
 
 
 let drawing = false;
