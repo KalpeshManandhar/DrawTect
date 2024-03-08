@@ -78,7 +78,7 @@ let currentStroke = [];
 let images = [];
 // images.push(new Img("/test/test.jpg", "filepath"));
 
-// let textAreas = [];
+let textAreas = [];
 
 
 let drawing = false;
@@ -225,6 +225,11 @@ function draw(e) {
   if (stateBools.panning){
     camera.pos.x -= e.clientX - prevCursorPos.x; 
     camera.pos.y -= e.clientY - prevCursorPos.y; 
+
+    for (let textBoxIndex in textAreas){
+      textAreas[textBoxIndex].translateBy(e.clientX - prevCursorPos.x, e.clientY - prevCursorPos.y);
+    }
+
     redrawAllStrokes();
   }
 
@@ -558,13 +563,15 @@ strokeButtons.forEach(btn2=> {
 canvas.addEventListener('mousedown', startPosition);
 canvas.addEventListener('mouseup', endPosition);
 canvas.addEventListener('mousemove', draw);
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', async (e) => {
   if (e.key == 'p'){
-    console.log("P pressed")
     if (selectedTool == "select"){
       const imageData = tool_SELECT.getStrokesImage(strokesStack);
       console.log(imageData);
-      sendToHTR(imageData);
+      const detected = await sendToHTR(imageData);
+      if (detected != ""){
+        textAreas.push(new TextBox(camera.toScreenSpace(tool_SELECT.combinedBoundingBox[0]), detected));
+      }
     }
   }
 })
@@ -588,7 +595,7 @@ window.addEventListener("keydown", async (e) => {
   }
 })
 
-let a = true;
+// let a = true;
 // canvas.addEventListener("click", e => {
 //   if (a){
 //     const worldPos = camera.toWorldSpace({x: e.clientX, y: e.clientY});

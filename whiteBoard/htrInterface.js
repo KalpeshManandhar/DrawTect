@@ -19,17 +19,20 @@ export async function sendToHTR(imageData){
 	for (const key of formData.keys()) {
 		console.log(key);
 	}
+
+	let detected = "";
 	await fetch('http://127.0.0.1:5000/prediction', {
 		method: 'POST',
 		body: formData,
 	})
 	.then(response => response.json())
 	.then(data => {
-		// Handle the response from the server
-		// vscode.postMessage({ command: 'textRecognitionResult', data });
 		console.log(data)
+		detected = data.image;
 	})
 	.catch(error => {
 		console.error('Error sending image data:', error);
 	});
+
+	return detected;
 }
