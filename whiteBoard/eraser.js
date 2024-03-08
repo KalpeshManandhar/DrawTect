@@ -71,10 +71,13 @@ class eraser{
 
 		if (this.isSelecting){
 			this.select(strokes, currentPos, camera);
+			this.isSelecting = false;
 			this.erase = true;
 		}
 		else if(this.erase){
 			this.eraseStrokes(strokes);
+			this.erase = false;
+			this.isSelecting = true;
 		}
 		this.prevPos = {x: currentPos.x, y: currentPos.y};
 	}
@@ -93,8 +96,9 @@ class eraser{
 			}
 			return this.removeIndex;
 		}
-		if (this.erase){
+		else if (this.erase){
 			this.erase = false;
+			
 			console.log("sending the indices for erased strokes");
 			return this.removeIndex;
 		}
