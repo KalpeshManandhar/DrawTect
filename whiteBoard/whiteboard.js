@@ -9,7 +9,8 @@ import { cubicBezierSplineFit } from "./spline.js";
 import drawShapes from "./shapes.js";
 const drawShape = new drawShapes;
 
-
+import  eraser  from "./eraser.js";
+const ERASER = new eraser;
 // detect user's colour mode
 function isDarkModePreferred() {
   return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -84,7 +85,7 @@ let drawing = false;
 
 let camera = new Camera2D(canvas.width, canvas.height, {x:0,y:0})
 let tool_SELECT = new SelectTool();
-
+//let tool_ERASER = new SelectTool();
 
 class Stack{
   constructor(){
@@ -136,7 +137,12 @@ function startPosition(e) {
     return;
   }
 
-  if(smoothen.checked && selectedTool == "pen"){
+  if (selectedTool == "eraser"){
+    ERASER.startErasing(clickedAt);
+    return;
+  }
+
+  if (smoothen.checked && selectedTool == "pen"){
     stateBools.smoothing = true;
   }
   else{
@@ -149,14 +155,15 @@ function startPosition(e) {
 
   drawing = true;
   singleElement = true;
-  // prevMousePosX = e.clientX - canvas.getBoundingClientRect().left;
-  // prevMousePosY = e.clientY - canvas.getBoundingClientRect().top;
+
   prevMousePosX = e.clientX;
   prevMousePosY = e.clientY;
+
   context.beginPath();
   context.lineWidth = tempWidth;
   context.strokeStyle = tempColour;
   context.fillStyle = tempColour;
+
   snapshot = context.getImageData(0, 0, canvas.width, canvas.height);
 }
 
@@ -174,7 +181,20 @@ function endPosition() {
         type: "stroke-move",
         data: changes
         
-      })
+      });
+    }
+  }
+
+  if (selectedTool == "eraser"){
+    const erasedI = ERASER.end();
+    
+		console.log("received the indices for erased strokes : ", erasedI);
+    if (erasedI.length > 0){
+      vscode.postMessage({
+        type: "stroke-remove",
+        data: erasedI
+        
+      });
     }
   }
 
@@ -197,7 +217,7 @@ function endPosition() {
     }
   });
   singleElement = false;
-//context.beginPath();
+
 }
 
 
@@ -217,29 +237,30 @@ function draw(e) {
     tool_SELECT.cursorMove(strokesStack, images, {x: e.clientX, y: e.clientY}, camera);
   }
 
+  if (selectedTool === "eraser"){
+
+    ERASER.eraseSelected(strokesStack, {x:e.clientX, y:e.clientY}, camera);
+  
+  }
+
   if (!drawing) return;
-  //context.putImageData(snapshot,0,0);
+
   context.putImageData(snapshot,0,0);
-  // if(singleElement){
-  //   snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
-  //   singleElement = false;  
-  // }
+
   context.lineCap = 'round';
 
   
   if(selectedTool === "rectangle"){
     
-   //drawShape.drawRectangle(e,prevMousePosX, prevMousePosY);
    currentStroke = drawShape.strokeRectangle(e, prevMousePosX, prevMousePosY);
   }
 
   else if(selectedTool === "diamond"){
-    //drawShape.drawDiamond(e, prevMousePosX, prevMousePosY, fillColor);
+
     currentStroke = drawShape.strokeDiamond(e, prevMousePosX, prevMousePosY);
   }
 
   else if(selectedTool === "circle"){
-    //drawCircle(e);
 
     let finalRadius = drawShape.strokeCircle(e, prevMousePosX, prevMousePosY);
     let tempX = e.clientX;
@@ -248,21 +269,17 @@ function draw(e) {
     let centerX = prevMousePosX + ((tempX - prevMousePosX)/2);
     let centerY = prevMousePosY + ((tempY - prevMousePosY)/2);
     currentStroke = drawShape.getFinalCircle(e, finalRadius, centerX, centerY,500);
-    }
-  
+  }
+
 
   else{
-    context.strokeStyle = selectedTool === "eraser" ? '#fff':tempColour;
     context.lineTo(e.clientX, e.clientY);
     currentStroke.push({x: e.clientX + camera.pos.x, y: e.clientY + camera.pos.y});
     context.stroke();
   }
 }
 
-  // if(singleElement){
-  //   // snapshotStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
-  //   singleElement = false;  
-  // }
+
   
 function disableWhiteboard(){
   allowUndo = false;
@@ -435,7 +452,6 @@ document.addEventListener('keydown', function(event) {
     if(false && !(strokesStack.length == 0)){
 
       snapshot = snapshotStack.pop();
-      // context.putImageData(snapshot,0,0);
       
       const lastStroke = strokesStack.pop();
       redoStrokesStack.push(lastStroke);
@@ -496,6 +512,7 @@ toolButtons.forEach(btn =>{
       console.log(btn.id);
       document.querySelector(".option.active").classList.remove("active");
       btn.classList.add("active");
+
       btn.id === 'eraser' ? penOptions.classList.add("disabled"):penOptions.classList.remove("disabled");
       selectedTool = btn.id;
     });
