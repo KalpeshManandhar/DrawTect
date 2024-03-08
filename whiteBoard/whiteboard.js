@@ -509,6 +509,7 @@ toolButtons.forEach(btn =>{
       console.log(btn.id);
       document.querySelector(".option.active").classList.remove("active");
       btn.classList.add("active");
+
       btn.id === 'eraser' ? penOptions.classList.add("disabled"):penOptions.classList.remove("disabled");
       selectedTool = btn.id;
     });

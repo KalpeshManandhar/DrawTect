@@ -20,6 +20,10 @@ body {
   left:245px;
 }
 
+#initialOptions{
+  padding: 5px;
+}
+
 
 #penOptions.disabled,
 #toolSelectionBox.disabled,
@@ -49,6 +53,7 @@ body {
 }
 
 .checkbox {
+  position: absolute;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
