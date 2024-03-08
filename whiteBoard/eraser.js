@@ -17,6 +17,7 @@ class eraser{
 	}
 
 	startErasing (startPos){
+		this.removeIndex = [];
 
 		this.selectedStrokeIndices = [];
 		this.isSelecting = true;
