@@ -126,8 +126,10 @@ const snapshotStack = new Stack();
 function startPosition(e) {
   clickedAt = {x: e.clientX, y: e.clientY};
 
-  if (stateBools.spacebar){
+  if (stateBools.spacebar || selectedTool == "hand"){
     stateBools.panning = true;
+    canvas.classList.remove("handcursor");
+    canvas.classList.add("handclosed");
     return;
   }
 
@@ -168,13 +170,15 @@ function startPosition(e) {
 }
 
 function endPosition() {
-  if (stateBools.panning){
+  if (stateBools.panning || selectedTool == "hand"){
     stateBools.panning = false;
+    canvas.classList.add("handcursor");
+    canvas.classList.remove("handclosed");
     return;
   }
 
   if (selectedTool == "select"){
-    const changes = tool_SELECT.end(strokesStack, images, camera)
+    const changes = tool_SELECT.end(strokesStack, images, camera);
 
     if (changes.length > 0){
       vscode.postMessage({
@@ -223,11 +227,12 @@ function endPosition() {
 
 function draw(e) {
   if (stateBools.panning){
+    canvas.classList.remove("handcursor");
+    canvas.classList.add("handclosed");
     camera.pos.x -= e.clientX - prevCursorPos.x; 
     camera.pos.y -= e.clientY - prevCursorPos.y; 
     redrawAllStrokes();
   }
-
   
   prevCursorPos.x = e.clientX;
   prevCursorPos.y = e.clientY;
@@ -335,7 +340,7 @@ export function drawRect(rect, color, width=1){
 }
 
 export function redrawAllStrokes(){
-  console.log(`redraw all ${strokesStack.length} strokes`)
+  console.log(`redraw all ${strokesStack.length} strokes`);
 
   clearBackground("white");
   for (let stroke of strokesStack){
@@ -514,6 +519,14 @@ toolButtons.forEach(btn =>{
       btn.classList.add("active");
 
       btn.id === 'eraser' ? penOptions.classList.add("disabled"):penOptions.classList.remove("disabled");
+
+      if (btn.id === 'hand') {
+        canvas.classList.add("handcursor");
+      }
+      else {
+        canvas.classList.remove("handcursor");
+        canvas.classList.remove("handclosed");
+      }
       selectedTool = btn.id;
     });
 });

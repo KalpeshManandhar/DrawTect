@@ -6,6 +6,14 @@ body {
     cursor: url('assets/pen.png'), auto;
 }
 
+#whiteboard.handclosed{
+    cursor: url('assets/handc.svg'), auto;
+}
+
+#whiteboard.handcursor{
+    cursor: url('assets/hand.svg'), auto;
+}
+
 #toolSelectionBox,
 #functions ,
 #initialOptions{
