@@ -18,6 +18,7 @@ function isDarkModePreferred() {
 import { toggleColorScheme } from "./user_mode.js";
 import { sendToHTR } from "./htrInterface.js";
 import { Img } from "./images.js";
+import { TextBox } from "./textbox.js";
 toggleColorScheme(isDarkModePreferred());
 
 // Event listener for changes in color scheme preference
@@ -73,8 +74,10 @@ let strokesStack = [];
 let redoStrokesStack = [];
 let currentStroke = [];
 
-let images = []
-images.push(new Img("/test/test.jpg", "filepath"))
+let images = [];
+// images.push(new Img("/test/test.jpg", "filepath"));
+
+// let textAreas = [];
 
 
 let drawing = false;
@@ -129,7 +132,7 @@ function startPosition(e) {
 
   // the select tool
   if (selectedTool == "select"){
-    tool_SELECT.start(clickedAt);
+    tool_SELECT.start(clickedAt, camera);
     return;
   }
 
@@ -164,7 +167,7 @@ function endPosition() {
   }
 
   if (selectedTool == "select"){
-    const changes = tool_SELECT.end(strokesStack, camera)
+    const changes = tool_SELECT.end(strokesStack, images, camera)
 
     if (changes.length > 0){
       vscode.postMessage({
@@ -211,7 +214,7 @@ function draw(e) {
 
 
   if (selectedTool == "select"){
-    tool_SELECT.cursorMove(strokesStack, {x: e.clientX, y: e.clientY}, camera);
+    tool_SELECT.cursorMove(strokesStack, images, {x: e.clientX, y: e.clientY}, camera);
   }
 
   if (!drawing) return;
@@ -568,6 +571,14 @@ window.addEventListener("keydown", async (e) => {
   }
 })
 
+let a = true;
+// canvas.addEventListener("click", e => {
+//   if (a){
+//     const worldPos = camera.toWorldSpace({x: e.clientX, y: e.clientY});
+//     textAreas.push(new TextBox(worldPos));
+//     a = false;
+//   }
+// })
 
 
 canvas.style.pointerEvents = 'none';

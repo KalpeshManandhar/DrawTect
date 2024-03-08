@@ -28,6 +28,14 @@ export function Rect(p1, p2){
 	return [min, max];
 
 }
+export function Rect_dim(min, w, h){
+	const max = {
+		x: min.x + w,
+		y: min.y + h
+	};
+	return [min, max];
+
+}
 
 
 export function rectRectOverlap(a,b){
