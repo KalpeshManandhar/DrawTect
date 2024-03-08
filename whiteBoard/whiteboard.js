@@ -600,7 +600,10 @@ window.addEventListener("keydown", async (e) => {
         images.push(new Img(URL.createObjectURL(blob), "blob"));
       }
       else if (item.types.includes("text/plain")){
-        // images.push(new Img());
+        const text = await (await (item.getType("text/plain"))).text();
+        textAreas.push(new TextBox(
+          {x: canvas.width * 0.5, y: canvas.height * 0.5}, text
+        ))
       }
 
       
