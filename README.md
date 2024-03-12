@@ -1,6 +1,6 @@
 # DrawTect: Scribble to Solve
 
-<img  src="./DrawTect-Assets/logoWhite.svg"  width="648"  height="200"  alt="logo"/>
+<img src="./DrawTect-Assets/logoWhite.svg" width="648" height="200" alt="logo"/>
 
 <div style="text-align: justify;">
 
@@ -18,13 +18,13 @@ This is especially useful in areas where comments might not be sufficient such a
 
 ## Project Screenshots
 <p float = "down">
-  <img  src="./DrawTect-Assets/interface.png" height="400"  alt="DrawTect Interface"/>
-  <img  src="./DrawTect-Assets/codeactions.png" height="00"  alt="Code Action"/>
+  <img src="./DrawTect-Assets/interface.png" height="400" alt="DrawTect Interface"/>
+  <img src="./DrawTect-Assets/codeactions.png" height="200" alt="Code Action"/>
 </p> 
 
 <p float = "left">
-	<img  src="./DrawTect-Assets/recognize.png" height="200"  alt="Character Recognition"/>
-	<img  src="./DrawTect-Assets/smooth.png" height="200"  alt="Stroke Smoothness"/>
+    <img src="./DrawTect-Assets/recognize.png" height="200" alt="Character Recognition"/>
+    <img src="./DrawTect-Assets/smooth.png" height="200" alt="Stroke Smoothness"/>
 </p>
 
 
@@ -34,6 +34,18 @@ This is especially useful in areas where comments might not be sufficient such a
 - **Smooth Strokes:** Utilizes cubic Bezier splines for smooth stroke rendering.
 - **Quick Access:** Allows easy access to whiteboard files from source files via comments.
 - **Handwritten Character Recognition:** Converts handwritten characters to digital text.
+
+## License
+
+This project is licensed under the [MIT License](./LICENSE.md).
+
+## Code of Conduct
+
+Please review our [Code of Conduct](./CODE_OF_CONDUCT.md) before contributing.
+
+## Contributing
+
+Read the [Contribution Guidelines](./CONTRIBUTING.md) before making any contributions.
 
 ## 
 Developed by Team Dots [2024]
