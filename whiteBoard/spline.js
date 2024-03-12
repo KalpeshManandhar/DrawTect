@@ -180,8 +180,10 @@ function cubicBezierFitRecursive(points, max_err){
 	return result;
 }
 
+// dt: bezier
 
-export function cubicBezierFitv2(points){
+
+function cubicBezierFit(points){
 	const n = points.length;
 
 	const distanceValues = [0];
@@ -397,7 +399,7 @@ export function cubicBezierSplineFit(rawPoints){
 	const points = prunePoints(rawPoints);
 	const n = points.length;
 
-	const MAX_ERR = 20;
+	const MAX_ERR = 10;
 	return cubicBezierFitRecursive(points, MAX_ERR);
 }
 

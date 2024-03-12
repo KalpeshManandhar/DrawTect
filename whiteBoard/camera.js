@@ -1,3 +1,4 @@
+//dt: camera
 export class Camera2D{
 	constructor (w, h, pos){
 		this.screenW = w;
