@@ -183,7 +183,7 @@ function cubicBezierFitRecursive(points, max_err){
 // dt: bezier
 
 
-function cubicBezierFit(points){
+function cubicBezierFitv2(points){
 	const n = points.length;
 
 	const distanceValues = [0];

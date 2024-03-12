@@ -6,6 +6,9 @@ export class Renderer{
 
 	drawCubicBezierSpline(points, color, width){
 		const nSegments = (points.length-1)/3;
+		if (nSegments == 0){
+			return;
+		}
 		
 		for (let i = 0; i<nSegments; i++){
 			this.drawCubicBezier(points.slice(i*3, i*3+4), color, width);
