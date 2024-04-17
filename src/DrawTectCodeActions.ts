@@ -15,8 +15,12 @@ const CODE_ACTIONS_COMMAND_TABLE = {
     open: {
         title: "DrawTect: Open",
         commandName: EXTENSION_COMMANDS.open
+    },
+    create: {
+        title: "DrawTect: Create",
+        commandName: EXTENSION_COMMANDS.create
     }
-}
+};
 
 
 export class DT_CodeActionsProvider implements vscode.CodeActionProvider{
@@ -62,7 +66,6 @@ export class DT_CodeActionsProvider implements vscode.CodeActionProvider{
                 }
 
                 const filename = `${words[1]}.dt`;
-                
 
                 actions.push(this.getCodeAction(
                     `${CODE_ACTIONS_COMMAND_TABLE.open.title} file ${filename}`,
@@ -71,7 +74,7 @@ export class DT_CodeActionsProvider implements vscode.CodeActionProvider{
                         command: CODE_ACTIONS_COMMAND_TABLE.open.commandName,
                         arguments: [filename]
                     }
-                ))
+                ));
             }
         }
         

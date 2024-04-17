@@ -45,6 +45,7 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         const filePath = `${baseUri.fsPath}/${relativePath}`;
 
         if (!fs.existsSync(filePath)){
+
             console.error(`${filePath} doesn't seem to exist.`);
             return false;
         }
@@ -55,10 +56,55 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
         return true;
     }
 
+    public static async createFileCommand(filename: string){
+        const workspaces = vscode.workspace.workspaceFolders;
+            if (!workspaces){
+                console.error("No workspace opened");
+                return false;
+            }
+
+            const baseUri = workspaces[0].uri;
+            const folderPath = `${baseUri.fsPath}/drawtect`;
+
+            if (!fs.existsSync(folderPath)){
+
+                fs.mkdir(folderPath, { recursive: true }, (err) => {
+                    if (err) {
+                        console.error('Error creating folder:', err);
+                        return false;
+                    } else {
+                        console.log('Folder drawtect created successfully!');
+                        fs.writeFile(`${folderPath}/${filename}`, "", (err) => {
+                            if (err){
+                                console.error(err);
+                                return false;
+                            }
+                            else{
+                                console.log(`File ${`${folderPath}/${filename}`} created`);
+                                return true;
+                            }
+                        });
+                    }
+                });
+            }
+            else{
+                fs.writeFile(`${folderPath}/${filename}`, "", (err) => {
+                    if (err){
+                        console.error(err);
+                        return false;
+                    }
+                    else{
+                        console.log(`File ${`${folderPath}/${filename}`} created`);
+                        return true;
+                    }
+                });
+            }
+    }
+
     // opens 
     public static async DT_openFileCommand(filename: string){
         
-
+        let noFile = false;
         if (await DT_EditorProvider.openFileCommand(filename)){
             return;
         }
@@ -67,9 +113,32 @@ export class DT_EditorProvider implements vscode.CustomTextEditorProvider {
             if (await DT_EditorProvider.openFileCommand(`${dir}/${filename}`)){
                 return;
             }
+            else {
+                noFile = true; 
+            }
         }
 
+        if (noFile) {
+            if ( await DT_EditorProvider.createFileCommand(filename)){
+                return;
+            }
+            else {
+                const workspaces = vscode.workspace.workspaceFolders;
+                if (!workspaces){
+                    console.error("No workspace opened");
+                    return false;
+                }
+        
+                const baseUri = workspaces[0].uri;
+                const filePath = `${baseUri.fsPath}/${`drawtect/${filename}`}`;
+
+                await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(filePath));
+                console.log(`created [DRAWTECT] File ${filePath} and opened`);
+            }
+        }
+        else{
         vscode.window.showErrorMessage(`Can't find ${filename} in predefined folder`);
+        }
     }
 
 

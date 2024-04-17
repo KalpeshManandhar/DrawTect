@@ -1,13 +1,17 @@
 export const CODE_ACTIONS_DOC_TYPES: Array<string> = [
     "typescript",
     "javascript",
-    "c"
+    "c",
+    "cpp",
+    "python",
+    "java"
 ];
 
     
 export const EXTENSION_COMMANDS = {
     test: 'DrawTect.test',
     open: 'DrawTect.open',
+    create: 'DrawTect.create'
 };
 
 export const DIRS_TO_CHECK = [
