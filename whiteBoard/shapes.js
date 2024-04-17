@@ -30,15 +30,17 @@ class drawShapes{
 		let tempY = e.clientY;
 		let strokeStack = [];
 
-		this.drawDiamond(e, prevMousePosX, prevMousePosY);
+		const {centerX, centerY,size} = this.drawDiamond(e, prevMousePosX, prevMousePosY);
 
+		const cx = centerX + cameraX;
+		const cy = centerY + cameraY;
 
 		strokeStack = [
-			{ x: prevMousePosX + (( tempX - prevMousePosX )/2) + cameraX, y: prevMousePosY + cameraY},
-			{ x: tempX + cameraX, y: prevMousePosY + ((tempY - prevMousePosY)/2) + cameraY},
-			{ x: tempX - ((tempX - prevMousePosX)/2) + cameraX, y: tempY  + cameraY},
-			{ x: prevMousePosX + cameraX, y: (prevMousePosY + tempY)/2  + cameraY},
-			{x: prevMousePosX + (( tempX - prevMousePosX )/2) + cameraX, y: prevMousePosY  + cameraY}
+			{ x: cx, y: cy - (size)},
+			{ x: cx + (size), y: cy},
+			{ x: cx, y: cy + (size)},
+			{ x: cx - (size), y: cy},
+			{x: cx, y: cy - (size)}
 		];
 		context.stroke();
 
@@ -110,7 +112,7 @@ class drawShapes{
 		// current transformation state
 		context.save();
 	
-		// trandlating the canvas to the center of the rectangle
+		// translating the canvas to the center of the rectangle
 		context.translate(centerX, centerY);
 	
 		// rotating the canvas by 45 degrees
@@ -119,10 +121,12 @@ class drawShapes{
 		// context.fillRect(-size /2, -size /2, size, size);
 		// }
 		// drawing the rectangle wit rotated coordinates
-		context.strokeRect(-size /2, -size /2, size, size);
+		context.strokeRect(- size/2, - size/2, 1.4 *size, 1.4 *size);
 	
 		// restoring the canvas
 		context.restore();
+
+		return { centerX, centerY, size};
 	
 		};
 	
