@@ -5,7 +5,7 @@ import {context} from "./whiteboard.js";
 
 class drawShapes{
 
-	strokeRectangle(e, prevMousePosX, prevMousePosY) {
+	strokeRectangle(e, prevMousePosX, prevMousePosY, cameraX, cameraY) {
 
 		let tempX = e.clientX;
         let tempY = e.clientY;
@@ -14,18 +14,18 @@ class drawShapes{
 		this.drawRectangle(e, prevMousePosX, prevMousePosY);
 
         strokeStack = [
-            { x: prevMousePosX, y: prevMousePosY },
-            { x: tempX, y: prevMousePosY },
-            { x: tempX, y: tempY },
-            { x: prevMousePosX, y: tempY },
-            { x: prevMousePosX, y: prevMousePosY }
+            { x: prevMousePosX + cameraX, y: prevMousePosY + cameraY},
+            { x: tempX + cameraX, y: prevMousePosY + cameraY},
+            { x: tempX + cameraX, y: tempY + cameraY},
+            { x: prevMousePosX + cameraX, y: tempY + cameraY},
+            { x: prevMousePosX + cameraX, y: prevMousePosY + cameraY}
         ];
         context.stroke();
 
         return strokeStack;
     }
 
-	strokeDiamond(e, prevMousePosX, prevMousePosY){
+	strokeDiamond(e, prevMousePosX, prevMousePosY, cameraX, cameraY){
 		let tempX = e.clientX;
 		let tempY = e.clientY;
 		let strokeStack = [];
@@ -34,11 +34,11 @@ class drawShapes{
 
 
 		strokeStack = [
-			{ x: prevMousePosX + (( tempX - prevMousePosX )/2), y: prevMousePosY },
-			{ x: tempX, y: prevMousePosY + ((tempY - prevMousePosY)/2)},
-			{ x: tempX - ((tempX - prevMousePosX)/2), y: tempY },
-			{ x: prevMousePosX, y: (prevMousePosY + tempY)/2 },
-			{x: prevMousePosX + (( tempX - prevMousePosX )/2), y: prevMousePosY }
+			{ x: prevMousePosX + (( tempX - prevMousePosX )/2) + cameraX, y: prevMousePosY + cameraY},
+			{ x: tempX + cameraX, y: prevMousePosY + ((tempY - prevMousePosY)/2) + cameraY},
+			{ x: tempX - ((tempX - prevMousePosX)/2) + cameraX, y: tempY  + cameraY},
+			{ x: prevMousePosX + cameraX, y: (prevMousePosY + tempY)/2  + cameraY},
+			{x: prevMousePosX + (( tempX - prevMousePosX )/2) + cameraX, y: prevMousePosY  + cameraY}
 		];
 		context.stroke();
 
@@ -77,7 +77,7 @@ class drawShapes{
 		return radius;
 	}
 
-	getFinalCircle(e,radius, centerX, centerY,numPoints=200,){
+	getFinalCircle(e,radius, centerX, centerY,numPoints=200, cameraX, cameraY){
 		let x,y;
 		context.beginPath();
 		let strokeStack = [];
@@ -85,8 +85,8 @@ class drawShapes{
 
 		for (let i = 0; i < numPoints; i++) {
 			const angle = i * angleIncrement; 
-			x = centerX + radius * Math.cos(angle); 
-			y = centerY + radius * Math.sin(angle); 
+			x = centerX + cameraX + radius * Math.cos(angle); 
+			y = centerY + cameraY + radius * Math.sin(angle); 
 			context.lineTo(x,y);
 			context.closePath;
 			strokeStack.push({x,y});

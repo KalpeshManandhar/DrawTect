@@ -83,7 +83,7 @@ let textAreas = [];
 
 let drawing = false;
 
-let camera = new Camera2D(canvas.width, canvas.height, {x:0,y:0})
+let camera = new Camera2D(canvas.width, canvas.height, {x:0,y:0});
 let tool_SELECT = new SelectTool();
 //let tool_ERASER = new SelectTool();
 
@@ -262,12 +262,12 @@ function draw(e) {
   
   if(selectedTool === "rectangle"){
     
-   currentStroke = drawShape.strokeRectangle(e, prevMousePosX, prevMousePosY);
+   currentStroke = drawShape.strokeRectangle(e, prevMousePosX, prevMousePosY, camera.pos.x, camera.pos.y);
   }
 
   else if(selectedTool === "diamond"){
 
-    currentStroke = drawShape.strokeDiamond(e, prevMousePosX, prevMousePosY);
+    currentStroke = drawShape.strokeDiamond(e, prevMousePosX, prevMousePosY, camera.pos.x, camera.pos.y);
   }
 
   else if(selectedTool === "circle"){
@@ -278,7 +278,7 @@ function draw(e) {
 
     let centerX = prevMousePosX + ((tempX - prevMousePosX)/2);
     let centerY = prevMousePosY + ((tempY - prevMousePosY)/2);
-    currentStroke = drawShape.getFinalCircle(e, finalRadius, centerX, centerY,500);
+    currentStroke = drawShape.getFinalCircle(e, finalRadius, centerX, centerY,500, camera.pos.x, camera.pos.y);
   }
 
 
