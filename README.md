@@ -23,17 +23,17 @@ This is especially useful in areas where comments might not be sufficient such a
 </p> 
 
 <p float = "left">
-    <img src="./DrawTect-Assets/recognize.png" height="200" alt="Character Recognition"/>
+    <!-- <img src="./DrawTect-Assets/recognize.png" height="200" alt="Character Recognition"/> -->
     <img src="./DrawTect-Assets/smooth.png" height="200" alt="Stroke Smoothness"/>
 </p>
 
 
 ## Features
 
-- **Whiteboard Application:** Includes drawing tools, panning, shapes, image insertion, and textboxes.
+- **Whiteboard Application:** Includes drawing tools, panning, and shapes.
 - **Smooth Strokes:** Utilizes cubic Bezier splines for smooth stroke rendering.
 - **Quick Access:** Allows easy access to whiteboard files from source files via comments.
-- **Handwritten Character Recognition:** Converts handwritten characters to digital text.
+<!-- - **Handwritten Character Recognition:** Converts handwritten characters to digital text. -->
 
 ## License
 

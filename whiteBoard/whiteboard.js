@@ -578,40 +578,40 @@ strokeButtons.forEach(btn2=> {
 canvas.addEventListener('mousedown', startPosition);
 canvas.addEventListener('mouseup', endPosition);
 canvas.addEventListener('mousemove', draw);
-document.addEventListener('keydown', async (e) => {
-  if (e.key == 'p'){
-    if (selectedTool == "select"){
-      const imageData = tool_SELECT.getStrokesImage(strokesStack);
-      console.log(imageData);
-      const detected = await sendToHTR(imageData);
-      if (detected != ""){
-        textAreas.push(new TextBox(camera.toScreenSpace(tool_SELECT.combinedBoundingBox[0]), detected));
-      }
-    }
-  }
-})
+// document.addEventListener('keydown', async (e) => {
+//   if (e.key == 'p'){
+//     if (selectedTool == "select"){
+//       const imageData = tool_SELECT.getStrokesImage(strokesStack);
+//       console.log(imageData);
+//       const detected = await sendToHTR(imageData);
+//       if (detected != ""){
+//         textAreas.push(new TextBox(camera.toScreenSpace(tool_SELECT.combinedBoundingBox[0]), detected));
+//       }
+//     }
+//   }
+// })
 
 
-window.addEventListener("keydown", async (e) => {
-  if (e.ctrlKey && e.key == 'v'){
-    const contents = await navigator.clipboard.read();
-    console.log(contents);
-    for (const item of contents){
-      if (item.types.includes("image/png")){
-        const blob = await item.getType("image/png");
-        images.push(new Img(URL.createObjectURL(blob), "blob"));
-      }
-      else if (item.types.includes("text/plain")){
-        const text = await (await (item.getType("text/plain"))).text();
-        textAreas.push(new TextBox(
-          {x: canvas.width * 0.5, y: canvas.height * 0.5}, text
-        ))
-      }
+// window.addEventListener("keydown", async (e) => {
+//   if (e.ctrlKey && e.key == 'v'){
+//     const contents = await navigator.clipboard.read();
+//     console.log(contents);
+//     for (const item of contents){
+//       if (item.types.includes("image/png")){
+//         const blob = await item.getType("image/png");
+//         images.push(new Img(URL.createObjectURL(blob), "blob"));
+//       }
+//       else if (item.types.includes("text/plain")){
+//         const text = await (await (item.getType("text/plain"))).text();
+//         textAreas.push(new TextBox(
+//           {x: canvas.width * 0.5, y: canvas.height * 0.5}, text
+//         ))
+//       }
 
       
-    }
-  }
-})
+//     }
+//   }
+// })
 
 // let a = true;
 // canvas.addEventListener("click", e => {
