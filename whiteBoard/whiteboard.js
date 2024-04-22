@@ -5,25 +5,26 @@ import { Camera2D } from "./camera.js";
 import { vscode } from "./interface.js";
 import { SelectTool } from "./selection.js";
 import { cubicBezierSplineFit } from "./spline.js";
-
+import { toggleColorScheme } from "./user_mode.js";
 import drawShapes from "./shapes.js";
 const drawShape = new drawShapes;
 
 import  eraser  from "./eraser.js";
 const ERASER = new eraser;
 // detect user's colour mode
-function isDarkModePreferred() {
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-}
+// function isDarkModePreferred() {
+//   return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+// }
 
-import { toggleColorScheme } from "./user_mode.js";
+// toggleColorScheme(isDarkModePreferred());
+
+// // Event listener for changes in color scheme preference
+// window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggleColorScheme);
+
+
 import { sendToHTR } from "./htrInterface.js";
 import { Img } from "./images.js";
 import { TextBox } from "./textbox.js";
-toggleColorScheme(isDarkModePreferred());
-
-// Event listener for changes in color scheme preference
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggleColorScheme);
 
 
 const canvas = document.getElementById('whiteboard'),
@@ -37,9 +38,7 @@ tools = document.getElementById('toolSelectionBox'),
 fun = document.getElementById('functions'),
 fillColor = document.querySelector("#fill"),
 smoothen = document.querySelector('#smooth'),
-debug = document.querySelector('#debuginfo'),
-// storebtn = document.querySelector(".saveImage"),
-// clearbtn = document.querySelector(".clearCanvas"),
+// debug = document.querySelector('#debuginfo'),
 toolButtons = document.querySelectorAll(".tool"),
 enableEdit = document.getElementById('initialOptions');
 
@@ -357,9 +356,9 @@ export function redrawAllStrokes(){
 
       case "sp":{
         drawCubicBezierSpline(strokeScreenSpace, stroke.color, stroke.width);
-        if (debug.checked){
-          drawStroke(strokeScreenSpace, "red", 1);
-        }
+        // if (debug.checked){
+        //   drawStroke(strokeScreenSpace, "red", 1);
+        // }
         break;
       }
       default: {
@@ -367,13 +366,13 @@ export function redrawAllStrokes(){
       }
     }
 
-    if (debug.checked) {
-      const boundsScreenSpace = [
-        camera.toScreenSpace(stroke.bounds[0]),
-        camera.toScreenSpace(stroke.bounds[1])
-      ];
-      drawRect(boundsScreenSpace, "red", 1);
-    }
+    // if (debug.checked) {
+    //   const boundsScreenSpace = [
+    //     camera.toScreenSpace(stroke.bounds[0]),
+    //     camera.toScreenSpace(stroke.bounds[1])
+    //   ];
+    //   drawRect(boundsScreenSpace, "red", 1);
+    // }
   }
 
   for (let image of images){
