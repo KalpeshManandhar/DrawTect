@@ -20,7 +20,7 @@ body {
     position: absolute;
     top: 10px;
     left: 10px;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.99);
     border: 1px solid #ccc;
     border-radius: 5px;
   }
@@ -30,6 +30,11 @@ body {
 
 #initialOptions{
   padding: 5px;
+  cursor: pointer; 
+  height: 20px;
+  width: 20px;
+  color: #1b1b1b;
+  justify-content: center;
 }
 
 
@@ -43,10 +48,12 @@ body {
 }
 
 #penOptions{
+  font-size: 10px;
+  color: #1b1b1b;
   position: absolute;
-  top: 70px;
+  top: 50px;
   left: 10px;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.99);
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -60,30 +67,38 @@ body {
   padding: 1px; 
 }
 
+.checkboxes{
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+
 .checkbox {
   position: absolute;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  position:relative;
-  width: 14px; 
-  height: 14px; 
-  border-radius: 50%; 
+  left: 10px;
+  bottom: 10px;
+  width: 10px; 
+  height: 10px; 
+  border-radius: 50%;
   border: 1px solid #ccc; 
   outline: none; 
   cursor: pointer; 
+  align-items: center;
 }
 
 .checkbox:checked {
-  background-color: #f8eafc; /* Change background color when checked */
+  background-color: yellowgreen; /* Change background color when checked */
 }
 
 /* Hide the default checkbox */
 .checkbox + label {
   display: inline-block;
   border: #ccc;
-  width: 14px; 
-  height: 14px; 
+  width: 10px; 
+  height: 10px; 
   background-color: transparent;
   border-radius: 50%;
   cursor: pointer;
@@ -94,16 +109,20 @@ body {
 .tools{
   list-style: none;
   display: flex;
-  margin: 5px 5px 5px 5px;
+  margin: 3px 3px;
   justify-content: space-around;
   align-items: center;
   padding: 0;
 }
-
+.tool {
+  position: absolute;
+  align-items: center;
+}
 .chooseColours .option{
   text-align: center;
-  height: 20px;
-  width: 20px;
+  border: 0.5px solid #f8eafc;
+  height: 10px;
+  width: 10px;
   border-radius: 50%;
   position: relative;
   margin:0 5px;
@@ -134,7 +153,7 @@ body {
   align-content: center;
   background: inherit;
   border-radius: inherit;
-  border: 2px solid purple;
+  box-shadow: 0px 0px 4px rgba(210, 74, 248, 0.7); 
   transform: translate(-50%, -50%);
   cursor: pointer;
 }
@@ -143,14 +162,15 @@ body {
 .chooseStroke .option{
   text-align: center;
   position: relative;
-  height: 40px;
-  width:40px;
+  height: 20px;
+  width:20px;
   border-radius: 20%;
   margin:0 2px;
 }
 .chooseStroke .option{
-  height: 35px;
-  width: 35px;
+  height: 15px;
+  width: 15px;
+  align-items: center;
   border: 1px solid #ccc ;
 }
 
@@ -158,8 +178,8 @@ body {
 #initialOptions .option{
 	text-align: center;
 	position: relative;
-	height: 40px;
-	width:50px;
+	height: 20px;
+	width:30px;
 	border-radius: 20%;
 	margin:5px 3px 5px 3px;
 	border: 1px solid #ccc ;
@@ -168,9 +188,9 @@ body {
 
 .tools img,
 .chooseStroke img{
-  margin-top: 10px;
-  width: 18px; /* Adjust the size as needed */
-  height: 18px;
+  margin-top: 25%;
+  width: 10px; 
+  height: 10px;
 }
 
 
