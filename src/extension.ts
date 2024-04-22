@@ -6,7 +6,7 @@ import { DT_CodeActionsProvider } from './DrawTectCodeActions';
 
 
 export function activate(context: vscode.ExtensionContext) {
-	
+
 
     vscode.window.onDidChangeTextEditorSelection(e => {
         const text = e.textEditor.document.getText(e.selections[0]);

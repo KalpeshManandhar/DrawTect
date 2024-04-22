@@ -7,7 +7,7 @@ export class Camera2D{
 		this.zoom = 1;
 		
 	}
-	//dt: setZoom
+	//dt: setscreen
 	toScreenSpace(point){
 		let res = {x: point.x, y: point.y};
 
@@ -16,7 +16,7 @@ export class Camera2D{
 		res.y -= this.pos.y;
 
 		return res;
-
+//dt: hello
 	}
 	
 	toWorldSpace(point){

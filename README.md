@@ -1,6 +1,6 @@
 # DrawTect: Scribble to Solve
 
-<img src="./DrawTect-Assets/logoWhite.svg" width="648" height="200" alt="logo"/>
+<img src="./DrawTect-Assets/logoWhite.png" width="648" height="200" alt="logo"/>
 
 <div style="text-align: justify;">
 
@@ -11,6 +11,9 @@ This is especially useful in areas where comments might not be sufficient such a
 
 
 ## Installation
+Get it from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=Dots.drawtect)  
+
+Or 
 
 1. Clone the repository.
 2. Create a workspace in VSCode.
